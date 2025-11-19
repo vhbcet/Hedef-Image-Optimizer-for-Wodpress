@@ -1,7 +1,7 @@
 ![NextGen Image Optimizer banner](assets/banner-772x250.png)
 
 === NextGen Image Optimizer ===
-Contributors: your-wporg-username  
+Contributors: hedefhosting  
 Donate link: https://hedefhosting.com.tr/  
 Tags: image optimization, webp, avif, performance, images, responsive images  
 Requires at least: 6.5  
