@@ -171,10 +171,15 @@ class NGIO_Converter {
         // Hangi format(lar) üretilecek? (En fazla bir tane)
         $formats = array();
 
-        $want_webp = ! empty( $this->settings['enable_webp'] ) && ! empty( $this->capabilities['webp_any'] );
-        $want_avif = ! empty( $this->settings['enable_avif'] ) && ! empty( $this->capabilities['avif_any'] );
+        $webp_requested = ! empty( $this->settings['enable_webp'] ) && ! empty( $this->capabilities['webp_any'] );
+        $avif_requested = ! empty( $this->settings['enable_avif'] ) && ! empty( $this->capabilities['avif_any'] );
 
-        // Tercih sırası: AVIF > WebP. Böylece hem WebP hem AVIF açık olsa bile sadece biri üretilir.
+        // KURAL:
+        // - Eğer WebP AÇIK ise -> WebP kullan.
+        // - AVIF sadece WebP KAPALIYSA devreye girsin.
+        $want_webp = $webp_requested;
+        $want_avif = $avif_requested && ! $webp_requested;
+
         if ( $want_avif ) {
             $formats[] = 'avif';
         } elseif ( $want_webp ) {
@@ -302,38 +307,58 @@ class NGIO_Converter {
      * @param array  $stats       Stats array (by reference).
      */
     protected function convert_file_for_formats( $source_path, $mime, $size_key, $formats, &$stats ) {
-        // Önce exclude kuralları devreye girsin.
-        if ( $this->should_exclude_file( $source_path ) ) {
-            return;
-        }
+    // Hariç tutma kuralları.
+    if ( $this->should_exclude_file( $source_path ) ) {
+        return;
+    }
 
-        $original_bytes = @filesize( $source_path );
-        if ( $original_bytes ) {
-            $stats['original_bytes'] += (int) $original_bytes;
-        }
+    // Orijinal boyut.
+    $original_bytes = @filesize( $source_path );
+    if ( $original_bytes ) {
+        $stats['original_bytes'] += (int) $original_bytes;
+    }
 
-        foreach ( $formats as $format ) {
-            $dest_path = $source_path . '.' . $format;
+    // Bu tek dosya için “en iyi” next-gen boyutu.
+    $best_nextgen = 0;
 
-            if ( ! $this->force_convert && file_exists( $dest_path ) ) {
-                // Zaten varsa bile, boyutu "nextgen_bytes" içine ekle.
-                $next_bytes = @filesize( $dest_path );
-                if ( $next_bytes ) {
-                    $stats['nextgen_bytes'] += (int) $next_bytes;
+    foreach ( $formats as $format ) {
+        $dest_path = $source_path . '.' . $format;
+
+        // Zaten varsa ve force_convert kapalıysa sadece boyutunu oku.
+        if ( ! $this->force_convert && file_exists( $dest_path ) ) {
+            $bytes = @filesize( $dest_path );
+            if ( $bytes ) {
+                $bytes = (int) $bytes;
+                if ( ! $best_nextgen || $bytes < $best_nextgen ) {
+                    $best_nextgen = $bytes;
                 }
-                continue;
             }
+            continue;
+        }
 
-            $created = $this->create_nextgen_file( $source_path, $dest_path, $mime, $format );
+        // Dosyayı oluştur.
+        $created = $this->create_nextgen_file( $source_path, $dest_path, $mime, $format );
 
-            if ( $created && file_exists( $dest_path ) ) {
-                $next_bytes = @filesize( $dest_path );
-                if ( $next_bytes ) {
-                    $stats['nextgen_bytes'] += (int) $next_bytes;
+        if ( $created && file_exists( $dest_path ) ) {
+            $bytes = @filesize( $dest_path );
+            if ( $bytes ) {
+                $bytes = (int) $bytes;
+                if ( ! $best_nextgen || $bytes < $best_nextgen ) {
+                    $best_nextgen = $bytes;
                 }
             }
         }
     }
+
+    // Eğer hiç next-gen üretilmediyse, tasarruf yok varsayıyoruz.
+    if ( $best_nextgen ) {
+        $stats['nextgen_bytes'] += $best_nextgen;
+    } elseif ( $original_bytes ) {
+        // Bu durumda next-gen boyutunu orijinal ile aynı kabul et
+        // (0% tasarruf).
+        $stats['nextgen_bytes'] += (int) $original_bytes;
+    }
+}
 
     /**
      * Create one next-gen file for a given format (WebP/AVIF).

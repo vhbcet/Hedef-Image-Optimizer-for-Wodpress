@@ -138,17 +138,21 @@ class NGIO_Frontend {
             return $html;
         }
 
-        $formats = (array) $meta['ngio']['formats'];
+                $formats = (array) $meta['ngio']['formats'];
 
-        // Ayarlarda kapalı olan formatları liste dışı bırak.
-        if ( empty( $this->settings['enable_webp'] ) ) {
-            $formats = array_diff( $formats, array( 'webp' ) );
-        }
-        if ( empty( $this->settings['enable_avif'] ) ) {
-            $formats = array_diff( $formats, array( 'avif' ) );
+        // Eski meta içinde hem webp hem avif olabilir; ayarlarla uyumlu son listeyi çıkaralım.
+        $has_webp = in_array( 'webp', $formats, true ) && ! empty( $this->settings['enable_webp'] );
+        // AVIF sadece WebP kapalıysa kullanılacak:
+        $has_avif = in_array( 'avif', $formats, true ) && ! empty( $this->settings['enable_avif'] ) && empty( $this->settings['enable_webp'] );
+
+        $final_formats = array();
+        if ( $has_avif ) {
+            $final_formats[] = 'avif';
+        } elseif ( $has_webp ) {
+            $final_formats[] = 'webp';
         }
 
-        if ( empty( $formats ) ) {
+        if ( empty( $final_formats ) ) {
             return $html;
         }
 
@@ -161,14 +165,14 @@ class NGIO_Frontend {
 
         $sources = '';
 
-        // Sıra: önce AVIF, sonra WebP (tarayıcı ilk desteklediğini alır).
-        if ( in_array( 'avif', $formats, true ) ) {
+        if ( in_array( 'avif', $final_formats, true ) ) {
             $sources .= '<source type="image/avif" srcset="' . esc_url( $src . '.avif' ) . '">';
         }
 
-        if ( in_array( 'webp', $formats, true ) ) {
+        if ( in_array( 'webp', $final_formats, true ) ) {
             $sources .= '<source type="image/webp" srcset="' . esc_url( $src . '.webp' ) . '">';
         }
+
 
         if ( ! $sources ) {
             return $html;

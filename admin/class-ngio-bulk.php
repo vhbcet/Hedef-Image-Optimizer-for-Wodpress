@@ -295,76 +295,81 @@ class NGIO_Bulk {
      * AJAX handler for bulk optimization.
      */
     public function ajax_bulk_optimize() {
-        check_ajax_referer( 'ngio_bulk_optimize', 'nonce' );
+    check_ajax_referer( 'ngio_bulk_optimize', 'nonce' );
 
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error(
-                array(
-                    'message' => __( 'You are not allowed to run bulk optimization.', 'nextgen-image-optimizer' ),
-                )
-            );
-        }
-
-        $page     = isset( $_POST['page'] ) ? max( 1, intval( $_POST['page'] ) ) : 1;
-        $per_page = 20;
-
-        $query = new WP_Query(
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error(
             array(
-                'post_type'      => 'attachment',
-                'post_mime_type' => array( 'image/jpeg', 'image/jpg', 'image/png' ),
-                'post_status'    => 'inherit',
-                'posts_per_page' => $per_page,
-                'paged'          => $page,
-                'fields'         => 'ids',
-                'orderby'        => 'ID',
-                'order'          => 'ASC',
-            )
-        );
-
-        if ( ! $query->have_posts() ) {
-            wp_send_json_success(
-                array(
-                    'processed' => 0,
-                    'items'     => array(),
-                    'finished'  => true,
-                )
-            );
-        }
-
-        $converter = new NGIO_Converter();
-        $converter->set_force_convert( false );
-
-        $processed = 0;
-        $items     = array();
-
-        foreach ( $query->posts as $attachment_id ) {
-            $meta = wp_get_attachment_metadata( $attachment_id );
-            if ( empty( $meta ) || ! is_array( $meta ) ) {
-                continue;
-            }
-
-            $new_meta = $converter->handle_attachment_metadata( $meta, $attachment_id );
-
-            // Meta değiştiyse kaydedelim.
-            if ( $new_meta !== $meta ) {
-                wp_update_attachment_metadata( $attachment_id, $new_meta );
-            }
-
-            $processed++;
-            $items[] = array(
-                'id'    => $attachment_id,
-                'title' => get_the_title( $attachment_id ),
-            );
-        }
-
-        $finished = ( $page >= $query->max_num_pages );
-
-        wp_send_json_success(
-            array(
-                'processed' => $processed,
-                'items'     => $items,
-                'finished'  => $finished,
+                'message' => __( 'You are not allowed to run bulk optimization.', 'nextgen-image-optimizer' ),
             )
         );
     }
+
+    $page = isset( $_POST['page'] ) ? max( 1, intval( $_POST['page'] ) ) : 1;
+
+    // Küçük batch'ler; ilerleyiş daha canlı görünsün.
+    $per_page = (int) apply_filters( 'ngio_bulk_batch_size', 4 );
+    if ( $per_page < 1 ) {
+        $per_page = 4;
+    }
+
+    $query = new WP_Query(
+        array(
+            'post_type'      => 'attachment',
+            'post_mime_type' => array( 'image/jpeg', 'image/jpg', 'image/png' ),
+            'post_status'    => 'inherit',
+            'posts_per_page' => $per_page,
+            'paged'          => $page,
+            'fields'         => 'ids',
+            'orderby'        => 'ID',
+            'order'          => 'ASC',
+        )
+    );
+
+    if ( ! $query->have_posts() ) {
+        wp_send_json_success(
+            array(
+                'processed' => 0,
+                'items'     => array(),
+                'finished'  => true,
+            )
+        );
+    }
+
+    $converter = new NGIO_Converter();
+    // BURASI ÖNEMLİ: yeniden encode et.
+    $converter->set_force_convert( true );
+
+    $processed = 0;
+    $items     = array();
+
+    foreach ( $query->posts as $attachment_id ) {
+        $meta = wp_get_attachment_metadata( $attachment_id );
+        if ( empty( $meta ) || ! is_array( $meta ) ) {
+            continue;
+        }
+
+        $new_meta = $converter->handle_attachment_metadata( $meta, $attachment_id );
+
+        if ( $new_meta !== $meta ) {
+            wp_update_attachment_metadata( $attachment_id, $new_meta );
+        }
+
+        $processed++;
+        $items[] = array(
+            'id'    => $attachment_id,
+            'title' => get_the_title( $attachment_id ),
+        );
+    }
+
+    $finished = ( $page >= $query->max_num_pages );
+
+    wp_send_json_success(
+        array(
+            'processed' => $processed,
+            'items'     => $items,
+            'finished'  => $finished,
+        )
+    );
+}
 }
