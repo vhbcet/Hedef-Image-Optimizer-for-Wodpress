@@ -1,0 +1,509 @@
+<?php
+/**
+ * Conversion engine for NextGen Image Optimizer.
+ *
+ * - Hooks into wp_generate_attachment_metadata to generate WebP / AVIF
+ * - Supports GD and Imagick
+ * - Optional resize for next-gen copies
+ * - Optional metadata stripping (Imagick)
+ * - Stores simple stats under $meta['ngio']
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+class NGIO_Converter {
+
+    /**
+     * Settings.
+     *
+     * @var array
+     */
+    protected $settings = array();
+
+    /**
+     * Server capabilities cache.
+     *
+     * @var array
+     */
+    protected $capabilities = array();
+
+    /**
+     * Force reconvert existing next-gen files.
+     *
+     * @var bool
+     */
+    protected $force_convert = false;
+
+     /**
+     * Constructor.
+     */
+    public function __construct() {
+        $this->settings     = $this->get_settings();
+        $this->capabilities = self::get_server_capabilities();
+
+        // Yeni: sadece "Optimize on upload" açıksa upload sırasında hook ekle.
+        if ( ! empty( $this->settings['auto_on_upload'] ) ) {
+            add_filter(
+                'wp_generate_attachment_metadata',
+                array( $this, 'handle_attachment_metadata' ),
+                10,
+                2
+            );
+        }
+    }
+
+    /**
+     * Allow bulk runner to force reconversion.
+     *
+     * @param bool $force Force flag.
+     */
+    public function set_force_convert( $force ) {
+        $this->force_convert = (bool) $force;
+    }
+
+    /**
+     * Get plugin settings (lightweight local version, not depending on admin class).
+     *
+     * @return array
+     */
+    protected function get_settings() {
+    $defaults = array(
+        'enable_webp'              => 1,
+        'enable_avif'              => 1,
+        'quality'                  => 82,
+        'auto_on_upload'           => 1,
+        'enable_picture'           => 1,
+        'resize_enabled'           => 0,
+        'resize_max_width'         => 2048,
+        'strip_metadata'           => 1,
+        'exclude_patterns_enabled' => 0,
+        'exclude_patterns'         => '',
+    );
+
+    $saved = get_option( 'ngio_settings', array() );
+    if ( ! is_array( $saved ) ) {
+        $saved = array();
+    }
+
+    $settings = wp_parse_args( $saved, $defaults );
+
+    // Hard-sanitize critical values.
+    $settings['quality']          = max( 0, min( 100, (int) $settings['quality'] ) );
+    $settings['resize_max_width'] = max( 320, min( 8000, (int) $settings['resize_max_width'] ) );
+
+    $settings['enable_webp']    = (int) ! empty( $settings['enable_webp'] );
+    $settings['enable_avif']    = (int) ! empty( $settings['enable_avif'] );
+    $settings['auto_on_upload'] = (int) ! empty( $settings['auto_on_upload'] );
+    $settings['enable_picture'] = (int) ! empty( $settings['enable_picture'] );
+    $settings['resize_enabled'] = (int) ! empty( $settings['resize_enabled'] );
+    $settings['strip_metadata'] = (int) ! empty( $settings['strip_metadata'] );
+
+    $settings['exclude_patterns_enabled'] = (int) ! empty( $settings['exclude_patterns_enabled'] );
+    $settings['exclude_patterns']         = is_string( $settings['exclude_patterns'] ) ? $settings['exclude_patterns'] : '';
+
+    return $settings;
+}
+
+
+    /**
+     * Detect server capabilities for WebP/AVIF via GD and Imagick.
+     *
+     * @return array
+     */
+    public static function get_server_capabilities() {
+        $caps = array(
+            'webp_gd'      => false,
+            'webp_imagick' => false,
+            'avif_gd'      => false,
+            'avif_imagick' => false,
+        );
+
+        // GD.
+        if ( function_exists( 'gd_info' ) ) {
+            $gd = gd_info();
+
+            if ( isset( $gd['WebP Support'] ) && $gd['WebP Support'] ) {
+                $caps['webp_gd'] = true;
+            }
+            if ( isset( $gd['AVIF Support'] ) && $gd['AVIF Support'] ) {
+                $caps['avif_gd'] = true;
+            }
+        }
+
+        // Imagick.
+        if ( class_exists( 'Imagick' ) ) {
+            try {
+                $imagick  = new Imagick();
+                $formats  = $imagick->queryFormats();
+                $upper    = array_map( 'strtoupper', $formats );
+                $caps['webp_imagick'] = in_array( 'WEBP', $upper, true );
+                $caps['avif_imagick'] = in_array( 'AVIF', $upper, true );
+            } catch ( Exception $e ) {
+                // Ignore failures.
+            }
+        }
+
+        $caps['webp_any'] = $caps['webp_gd'] || $caps['webp_imagick'];
+        $caps['avif_any'] = $caps['avif_gd'] || $caps['avif_imagick'];
+
+        return $caps;
+    }
+
+    /**
+     * Main handler for attachment metadata – generate next-gen copies.
+     *
+     * @param array $metadata      Attachment meta.
+     * @param int   $attachment_id Attachment ID.
+     *
+     * @return array
+     */
+    public function handle_attachment_metadata( $metadata, $attachment_id ) {
+        if ( empty( $metadata ) || ! is_array( $metadata ) ) {
+            return $metadata;
+        }
+
+        $mime = get_post_mime_type( $attachment_id );
+        if ( ! in_array( $mime, array( 'image/jpeg', 'image/jpg', 'image/png' ), true ) ) {
+            return $metadata;
+        }
+
+        // Which formats should we generate?
+        $formats = array();
+        if ( $this->settings['enable_webp'] && ! empty( $this->capabilities['webp_any'] ) ) {
+            $formats[] = 'webp';
+        }
+        if ( $this->settings['enable_avif'] && ! empty( $this->capabilities['avif_any'] ) ) {
+            $formats[] = 'avif';
+        }
+
+        if ( empty( $formats ) ) {
+            return $metadata;
+        }
+
+        $upload_dir = wp_upload_dir();
+        if ( ! empty( $upload_dir['error'] ) ) {
+            return $metadata;
+        }
+
+        $base_file = isset( $metadata['file'] ) ? $metadata['file'] : '';
+        if ( ! $base_file ) {
+            return $metadata;
+        }
+
+        $original_path = path_join( $upload_dir['basedir'], $base_file );
+        $base_dir      = dirname( $original_path );
+
+        $stats = array(
+            'original_bytes' => 0,
+            'nextgen_bytes'  => 0,
+        );
+
+        // Full size.
+        if ( file_exists( $original_path ) ) {
+            $this->convert_file_for_formats(
+                $original_path,
+                $mime,
+                'full',
+                $formats,
+                $stats
+            );
+        }
+
+        // Intermediate sizes.
+        if ( ! empty( $metadata['sizes'] ) && is_array( $metadata['sizes'] ) ) {
+            foreach ( $metadata['sizes'] as $size_key => $size_data ) {
+                if ( empty( $size_data['file'] ) ) {
+                    continue;
+                }
+
+                $size_path = path_join( $base_dir, $size_data['file'] );
+
+                if ( file_exists( $size_path ) ) {
+                    $this->convert_file_for_formats(
+                        $size_path,
+                        $mime,
+                        $size_key,
+                        $formats,
+                        $stats
+                    );
+                }
+            }
+        }
+
+        if ( $stats['original_bytes'] > 0 && $stats['nextgen_bytes'] > 0 ) {
+            $metadata['ngio'] = array(
+                'generated_at'   => time(),
+                'formats'        => $formats,
+                'original_bytes' => $stats['original_bytes'],
+                'nextgen_bytes'  => $stats['nextgen_bytes'],
+                'bytes_saved'    => max( 0, $stats['original_bytes'] - $stats['nextgen_bytes'] ),
+            );
+        }
+
+        return $metadata;
+    }
+
+    /**
+     * Convert a single physical file into one or more next-gen formats.
+     *
+     * @param string $source_path File path.
+     * @param string $mime        MIME type of original.
+     * @param string $size_key    Size identifier (full, thumbnail, etc.).
+     * @param array  $formats     Formats to generate (webp, avif).
+     * @param array  $stats       Stats array (by reference).
+     */
+         /**
+     * Check if a given file path should be excluded from optimization.
+     *
+     * @param string $source_path File path.
+     *
+     * @return bool
+     */
+    protected function should_exclude_file( $source_path ) {
+        if ( empty( $this->settings['exclude_patterns_enabled'] ) ) {
+            return false;
+        }
+
+        if ( empty( $this->settings['exclude_patterns'] ) || ! is_string( $this->settings['exclude_patterns'] ) ) {
+            return false;
+        }
+
+        $patterns_raw = $this->settings['exclude_patterns'];
+        if ( '' === trim( $patterns_raw ) ) {
+            return false;
+        }
+
+        // Full path + sadece isim üzerinde arama yapalım.
+        $basename = function_exists( 'wp_basename' ) ? wp_basename( $source_path ) : basename( $source_path );
+
+        $lines = preg_split( '/\r\n|\r|\n/', $patterns_raw );
+        if ( ! is_array( $lines ) ) {
+            return false;
+        }
+
+        foreach ( $lines as $pattern ) {
+            $pattern = trim( $pattern );
+            if ( '' === $pattern ) {
+                continue;
+            }
+
+            // Case-insensitive substring araması.
+            if ( false !== stripos( $source_path, $pattern ) || false !== stripos( $basename, $pattern ) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function convert_file_for_formats( $source_path, $mime, $size_key, $formats, &$stats ) {
+    // Önce exclude kuralları devreye girsin.
+    if ( $this->should_exclude_file( $source_path ) ) {
+        return;
+    }
+
+    $original_bytes = @filesize( $source_path );
+    if ( $original_bytes ) {
+        $stats['original_bytes'] += (int) $original_bytes;
+    }
+
+    foreach ( $formats as $format ) {
+            $dest_path = $source_path . '.' . $format;
+
+            if ( ! $this->force_convert && file_exists( $dest_path ) ) {
+                // Already there – still count its size towards "nextgen_bytes".
+                $next_bytes = @filesize( $dest_path );
+                if ( $next_bytes ) {
+                    $stats['nextgen_bytes'] += (int) $next_bytes;
+                }
+                continue;
+            }
+
+            $created = $this->create_nextgen_file( $source_path, $dest_path, $mime, $format );
+
+            if ( $created && file_exists( $dest_path ) ) {
+                $next_bytes = @filesize( $dest_path );
+                if ( $next_bytes ) {
+                    $stats['nextgen_bytes'] += (int) $next_bytes;
+                }
+            }
+        }
+    }
+
+    /**
+     * Create one next-gen file for a given format (WebP/AVIF).
+     *
+     * @param string $source_path Source path.
+     * @param string $dest_path   Destination path.
+     * @param string $mime        MIME type of original.
+     * @param string $format      Target format (webp|avif).
+     *
+     * @return bool
+     */
+    protected function create_nextgen_file( $source_path, $dest_path, $mime, $format ) {
+        // Prefer Imagick for AVIF (and generally when available).
+        $use_imagick = false;
+
+        if ( 'webp' === $format && ! empty( $this->capabilities['webp_imagick'] ) ) {
+            $use_imagick = true;
+        } elseif ( 'avif' === $format && ! empty( $this->capabilities['avif_imagick'] ) ) {
+            $use_imagick = true;
+        }
+
+        if ( $use_imagick && class_exists( 'Imagick' ) ) {
+            return $this->create_with_imagick( $source_path, $dest_path, $format );
+        }
+
+        // Fallback to GD.
+        return $this->create_with_gd( $source_path, $dest_path, $mime, $format );
+    }
+
+    /**
+     * Create next-gen file using Imagick.
+     *
+     * @param string $source_path Source path.
+     * @param string $dest_path   Destination path.
+     * @param string $format      Target format.
+     *
+     * @return bool
+     */
+    protected function create_with_imagick( $source_path, $dest_path, $format ) {
+        try {
+            $image = new Imagick( $source_path );
+        } catch ( Exception $e ) {
+            return false;
+        }
+
+        try {
+            $geometry = $image->getImageGeometry();
+            $width    = isset( $geometry['width'] ) ? (int) $geometry['width'] : 0;
+            $height   = isset( $geometry['height'] ) ? (int) $geometry['height'] : 0;
+
+            // Optional resize.
+            if ( $this->settings['resize_enabled'] && $this->settings['resize_max_width'] > 0 && $width > $this->settings['resize_max_width'] ) {
+                $target_width  = $this->settings['resize_max_width'];
+                $ratio         = $target_width / $width;
+                $target_height = (int) round( $height * $ratio );
+
+                $image->resizeImage( $target_width, $target_height, Imagick::FILTER_LANCZOS, 1 );
+            }
+
+            if ( $this->settings['strip_metadata'] ) {
+                $image->stripImage();
+            }
+
+            $image->setImageFormat( $format );
+            $image->setImageCompressionQuality( $this->settings['quality'] );
+
+            // Ensure directory exists.
+            $dir = dirname( $dest_path );
+            if ( ! file_exists( $dir ) ) {
+                wp_mkdir_p( $dir );
+            }
+
+            $image->writeImage( $dest_path );
+            $image->clear();
+            $image->destroy();
+
+            return true;
+        } catch ( Exception $e ) {
+            if ( isset( $image ) ) {
+                $image->clear();
+                $image->destroy();
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Create next-gen file using GD.
+     *
+     * @param string $source_path Source path.
+     * @param string $dest_path   Destination path.
+     * @param string $mime        Source MIME type.
+     * @param string $format      Target format.
+     *
+     * @return bool
+     */
+    protected function create_with_gd( $source_path, $dest_path, $mime, $format ) {
+        if ( ! function_exists( 'imagecreatefromjpeg' ) ) {
+            return false;
+        }
+
+        $image = null;
+
+        if ( 'image/jpeg' === $mime || 'image/jpg' === $mime ) {
+            $image = @imagecreatefromjpeg( $source_path );
+        } elseif ( 'image/png' === $mime ) {
+            $image = @imagecreatefrompng( $source_path );
+        }
+
+        if ( ! $image ) {
+            return false;
+        }
+
+        $width  = imagesx( $image );
+        $height = imagesy( $image );
+
+        $target   = $image;
+        $resized  = null;
+
+        // Optional resize.
+        if ( $this->settings['resize_enabled'] && $this->settings['resize_max_width'] > 0 && $width > $this->settings['resize_max_width'] ) {
+            $target_width  = $this->settings['resize_max_width'];
+            $ratio         = $target_width / $width;
+            $target_height = (int) round( $height * $ratio );
+
+            $resized = imagecreatetruecolor( $target_width, $target_height );
+
+            // Preserve alpha for PNG.
+            if ( 'image/png' === $mime ) {
+                imagealphablending( $resized, false );
+                imagesavealpha( $resized, true );
+                $transparent = imagecolorallocatealpha( $resized, 0, 0, 0, 127 );
+                imagefilledrectangle( $resized, 0, 0, $target_width, $target_height, $transparent );
+            }
+
+            imagecopyresampled(
+                $resized,
+                $image,
+                0,
+                0,
+                0,
+                0,
+                $target_width,
+                $target_height,
+                $width,
+                $height
+            );
+
+            $target = $resized;
+        }
+
+        // Ensure directory exists.
+        $dir = dirname( $dest_path );
+        if ( ! file_exists( $dir ) ) {
+            wp_mkdir_p( $dir );
+        }
+
+        $quality = $this->settings['quality'];
+
+        $result = false;
+
+        if ( 'webp' === $format && function_exists( 'imagewebp' ) ) {
+            $result = imagewebp( $target, $dest_path, $quality );
+        } elseif ( 'avif' === $format && function_exists( 'imageavif' ) ) {
+            $result = imageavif( $target, $dest_path, $quality );
+        }
+
+        if ( $resized ) {
+            imagedestroy( $resized );
+        }
+
+        imagedestroy( $image );
+
+        return (bool) $result;
+    }
+}
