@@ -2,7 +2,8 @@
 /**
  * Frontend integration for NextGen Image Optimizer.
  *
- * Wraps images with <picture> and adds AVIF/WebP sources where available.
+ * - Wraps images in <picture> with AVIF / WebP <source> when available
+ * - Hooks into wp_get_attachment_image, post_thumbnail_html and the_content
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,24 +13,39 @@ if ( ! defined( 'ABSPATH' ) ) {
 class NGIO_Frontend {
 
     /**
+     * @var array
+     */
+    protected $settings = array();
+
+    /**
      * Constructor.
      */
     public function __construct() {
-        add_filter( 'wp_get_attachment_image', array( $this, 'filter_attachment_image' ), 10, 4 );
+        $this->settings = $this->get_settings();
+
+        if ( empty( $this->settings['enable_picture'] ) ) {
+            // Frontend picture entegrasyonu kapalı ise hiçbir hook eklemeyelim.
+            return;
+        }
+
+        // Çekirdek WP image çıktıları.
+        add_filter( 'wp_get_attachment_image', array( $this, 'filter_attachment_image_html' ), 20, 5 );
+        add_filter( 'post_thumbnail_html', array( $this, 'filter_post_thumbnail_html' ), 20, 5 );
+
+        // İçerikteki wp-image-123 sınıflı <img> etiketleri.
+        add_filter( 'the_content', array( $this, 'filter_content_images' ), 20 );
     }
 
     /**
-     * Get plugin settings (merged with defaults).
+     * Settings'i basit haliyle çek.
      *
      * @return array
      */
     protected function get_settings() {
         $defaults = array(
-            'enable_webp'     => 1,
-            'enable_avif'     => 1,
-            'quality'         => 82,
-            'auto_on_upload'  => 1,
-            'enable_picture'  => 1,
+            'enable_picture' => 1,
+            'enable_webp'    => 1,
+            'enable_avif'    => 1,
         );
 
         $saved = get_option( 'ngio_settings', array() );
@@ -37,114 +53,127 @@ class NGIO_Frontend {
             $saved = array();
         }
 
-        return wp_parse_args( $saved, $defaults );
+        $settings = wp_parse_args( $saved, $defaults );
+
+        $settings['enable_picture'] = (int) ! empty( $settings['enable_picture'] );
+        $settings['enable_webp']    = (int) ! empty( $settings['enable_webp'] );
+        $settings['enable_avif']    = (int) ! empty( $settings['enable_avif'] );
+
+        return $settings;
     }
 
     /**
-     * Filter attachment image HTML to wrap with <picture>.
+     * wp_get_attachment_image filtresi.
+     */
+    public function filter_attachment_image_html( $html, $attachment_id, $size, $icon, $attr ) {
+        return $this->build_picture_markup( $html, $attachment_id );
+    }
+
+    /**
+     * post_thumbnail_html filtresi.
+     */
+    public function filter_post_thumbnail_html( $html, $post_id, $post_thumbnail_id, $size, $attr ) {
+        if ( ! $post_thumbnail_id ) {
+            return $html;
+        }
+
+        return $this->build_picture_markup( $html, $post_thumbnail_id );
+    }
+
+    /**
+     * the_content filtresi: wp-image-123 class'lı <img> etiketlerini yakalar.
+     */
+    public function filter_content_images( $content ) {
+        if ( false === strpos( $content, '<img' ) ) {
+            return $content;
+        }
+
+        $self = $this;
+
+        $content = preg_replace_callback(
+            '/<img[^>]+class=["\'][^"\']*wp-image-(\d+)[^"\']*["\'][^>]*>/i',
+            function ( $matches ) use ( $self ) {
+                $img_html      = $matches[0];
+                $attachment_id = (int) $matches[1];
+
+                return $self->build_picture_markup( $img_html, $attachment_id );
+            },
+            $content
+        );
+
+        return $content;
+    }
+
+    /**
+     * Verilen <img> HTML'ini, mevcutsa AVIF/WEBP source'ları olan <picture> ile sarar.
      *
-     * @param string       $html           The HTML for the image.
-     * @param int          $attachment_id  Attachment ID.
-     * @param string|array $size           Image size.
-     * @param bool         $icon           Whether it is an icon.
+     * @param string $html
+     * @param int    $attachment_id
      *
      * @return string
      */
-    public function filter_attachment_image( $html, $attachment_id, $size, $icon ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
-        // Admin, feed vs. üzerinde oynamayalım.
-        if ( is_admin() || is_feed() ) {
+    protected function build_picture_markup( $html, $attachment_id ) {
+        if ( empty( $this->settings['enable_picture'] ) ) {
             return $html;
         }
 
-        // Eğer zaten <picture> ise, bir daha sarmayalım.
-        if ( false !== strpos( $html, '<picture' ) ) {
+        // Zaten <picture> ile sarılıysa bir daha dokunma.
+        if ( false !== stripos( $html, '<picture' ) ) {
             return $html;
         }
 
-        $settings = $this->get_settings();
-
-        // Frontend picture özelliği kapalıysa dokunma.
-        if ( empty( $settings['enable_picture'] ) ) {
+        $attachment_id = (int) $attachment_id;
+        if ( $attachment_id <= 0 ) {
             return $html;
         }
 
-        // Sadece JPEG/JPG/PNG.
         $mime = get_post_mime_type( $attachment_id );
         if ( ! in_array( $mime, array( 'image/jpeg', 'image/jpg', 'image/png' ), true ) ) {
             return $html;
         }
 
         $meta = wp_get_attachment_metadata( $attachment_id );
-        if ( empty( $meta ) || ! is_array( $meta ) ) {
+        if ( empty( $meta ) || ! is_array( $meta ) || empty( $meta['ngio'] ) || empty( $meta['ngio']['formats'] ) ) {
+            // Bu görsel için henüz next-gen üretilmemiş.
             return $html;
         }
 
-        // Hangi size için HTML üretiliyor?
-        $size_key = 'full';
+        $formats = (array) $meta['ngio']['formats'];
 
-        if ( is_string( $size ) && 'full' !== $size && isset( $meta['sizes'][ $size ] ) ) {
-            $size_key = $size;
+        // Ayarlarda kapalı olan formatları liste dışı bırak.
+        if ( empty( $this->settings['enable_webp'] ) ) {
+            $formats = array_diff( $formats, array( 'webp' ) );
+        }
+        if ( empty( $this->settings['enable_avif'] ) ) {
+            $formats = array_diff( $formats, array( 'avif' ) );
         }
 
-        if ( empty( $meta['ngio_converted'][ $size_key ] ) || ! is_array( $meta['ngio_converted'][ $size_key ] ) ) {
-            // Bu size için hiç dönüşüm yapılmamışsa dokunma.
+        if ( empty( $formats ) ) {
             return $html;
         }
 
-        $converted  = $meta['ngio_converted'][ $size_key ];
-        $upload_dir = wp_upload_dir();
-
-        if ( ! empty( $upload_dir['error'] ) ) {
+        // <img src="..."> içindeki src'yi çekelim.
+        if ( ! preg_match( '/<img[^>]+src=["\']([^"\']+)["\']/i', $html, $m ) ) {
             return $html;
         }
 
-        $baseurl = trailingslashit( $upload_dir['baseurl'] );
+        $src = $m[1];
 
-        $avif_url = '';
-        $webp_url = '';
-
-        if ( ! empty( $settings['enable_avif'] ) && ! empty( $converted['avif'] ) ) {
-            $avif_url = $baseurl . ltrim( $converted['avif'], '/\\' );
-        }
-
-        if ( ! empty( $settings['enable_webp'] ) && ! empty( $converted['webp'] ) ) {
-            $webp_url = $baseurl . ltrim( $converted['webp'], '/\\' );
-        }
-
-        // Kullanabileceğimiz format yoksa hiç dokunma.
-        if ( empty( $avif_url ) && empty( $webp_url ) ) {
-            return $html;
-        }
-
-        // Orijinal <img> tag'ini HTML içinden çıkaralım.
-        if ( ! preg_match( '/<img\s[^>]*>/i', $html, $img_match ) ) {
-            return $html;
-        }
-
-        $img_tag = $img_match[0];
-
-        // picture + source dizilimi: önce AVIF, sonra WebP, en altta orijinal <img>.
         $sources = '';
 
-        if ( $avif_url ) {
-            $sources .= '<source type="image/avif" srcset="' . esc_url( $avif_url ) . '" />';
+        // Sıra: önce AVIF, sonra WebP (tarayıcı ilk desteklediğini alır).
+        if ( in_array( 'avif', $formats, true ) ) {
+            $sources .= '<source type="image/avif" srcset="' . esc_url( $src . '.avif' ) . '">';
         }
 
-        if ( $webp_url ) {
-            $sources .= '<source type="image/webp" srcset="' . esc_url( $webp_url ) . '" />';
+        if ( in_array( 'webp', $formats, true ) ) {
+            $sources .= '<source type="image/webp" srcset="' . esc_url( $src . '.webp' ) . '">';
         }
 
-        $picture = '<picture class="ngio-picture">' . $sources . $img_tag . '</picture>';
-
-        // Eğer orijinal HTML img'den başka sarmalayıcılar da içeriyorsa (örneğin <figure>),
-        // img'yi picture ile değiştirelim.
-        $result = str_replace( $img_tag, $picture, $html );
-
-        // Güvenli olması için aşırı uç durumlarda fallback olarak sadece picture döndürelim.
-        if ( $result === $html ) {
-            $result = $picture;
+        if ( ! $sources ) {
+            return $html;
         }
 
-        return $result;
+        return '<picture class="ngio-picture">' . $sources . $html . '</picture>';
     }
 }

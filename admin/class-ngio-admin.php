@@ -34,6 +34,23 @@ class NGIO_Admin {
         add_filter( 'manage_upload_columns', array( $this, 'add_media_column' ) );
         add_action( 'manage_media_custom_column', array( $this, 'render_media_column' ), 10, 2 );
     }
+function ngio_get_server_capabilities() {
+    $converter = new NGIO_Converter();
+
+    $webp_gd      = $converter->server_supports_webp_gd();
+    $webp_imagick = $converter->server_supports_webp_imagick();
+    $avif_gd      = $converter->server_supports_avif_gd();
+    $avif_imagick = $converter->server_supports_avif_imagick();
+
+    return array(
+        'webp_gd'      => $webp_gd,
+        'webp_imagick' => $webp_imagick,
+        'avif_gd'      => $avif_gd,
+        'avif_imagick' => $avif_imagick,
+        'webp_overall' => ( $webp_gd || $webp_imagick ),
+        'avif_overall' => ( $avif_gd || $avif_imagick ),
+    );
+}
 
     /**
      * Default settings.
@@ -429,7 +446,15 @@ class NGIO_Admin {
                                     ?>
                                 </span>
                             </span>
-                        </div>
+                        </div><p class="ngio-hero-madeby">
+    <?php
+    printf(
+        /* translators: 1: Hedef Hosting link HTML */
+        __( 'This plugin is built by %1$s and offered completely free. If you spot something missing or have ideas to improve it, feel free to email us at support@hedefhosting.com.tr', 'nextgen-image-optimizer' ),
+        '<a href="https://hedefhosting.com.tr/" target="_blank" rel="noopener noreferrer">Hedef Hosting</a>'
+    );
+    ?>
+</p>
                     </div>
                 </div>
                 <div class="ngio-hero-right">

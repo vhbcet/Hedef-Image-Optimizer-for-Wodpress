@@ -1,51 +1,88 @@
 <?php
 /**
- * Plugin Name:       NextGen Image Optimizer
- * Plugin URI:        https://example.com/nextgen-image-optimizer
- * Description:       Convert JPEG/PNG images to WebP and AVIF on upload or in bulk, with fine-grained control.
- * Version:           0.1.0
- * Author:            Hedef Hosting
- * Author URI:        https://hedefhosting.com.tr/
- * Text Domain:       nextgen-image-optimizer
- * Domain Path:       /languages
- * Requires at least: 6.5
- * Requires PHP:      8.1
- * License:           GPLv2 or later
- * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Plugin Name: NextGen Image Optimizer
+ * Plugin URI:  https://hedefhosting.com.tr/
+ * Description: Convert JPEG and PNG images to modern WebP and AVIF formats on upload or in bulk, and optionally serve them using <picture> tags. 100% local – no external API.
+ * Author:      Hedef Hosting
+ * Author URI:  https://hedefhosting.com.tr/
+ * Version:     0.1.0
+ * Text Domain: nextgen-image-optimizer
+ * Domain Path: /languages
+ * License:     GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'NGIO_VERSION', '0.1.0' );
-define( 'NGIO_PLUGIN_FILE', __FILE__ );
-define( 'NGIO_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'NGIO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-
-// Çekirdek sınıfı yükle.
-require_once NGIO_PLUGIN_DIR . 'includes/class-ngio-core.php';
-
 /**
- * Eklentiyi başlat.
+ * Sabitler
  */
-function ngio_run() {
-    $plugin = NGIO_Core::instance();
-    $plugin->run();
+if ( ! defined( 'NGIO_VERSION' ) ) {
+    define( 'NGIO_VERSION', '0.1.0' );
 }
-ngio_run();
+
+if ( ! defined( 'NGIO_PLUGIN_FILE' ) ) {
+    define( 'NGIO_PLUGIN_FILE', __FILE__ );
+}
+
+if ( ! defined( 'NGIO_PLUGIN_DIR' ) ) {
+    define( 'NGIO_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+}
+
+if ( ! defined( 'NGIO_PLUGIN_URL' ) ) {
+    define( 'NGIO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+}
+
 /**
- * Load plugin textdomain for translations.
+ * Dil dosyalarını yükle
  */
 function ngio_load_textdomain() {
     load_plugin_textdomain(
         'nextgen-image-optimizer',
         false,
-        dirname( plugin_basename( __FILE__ ) ) . '/languages/'
+        dirname( plugin_basename( NGIO_PLUGIN_FILE ) ) . '/languages/'
     );
 }
 add_action( 'plugins_loaded', 'ngio_load_textdomain' );
 
-// Aktivasyon / de-aktivasyon hook'ları.
-register_activation_hook( __FILE__, array( 'NGIO_Core', 'activate' ) );
-register_deactivation_hook( __FILE__, array( 'NGIO_Core', 'deactivate' ) );
+/**
+ * Ana bootstrap
+ */
+function ngio_bootstrap() {
+    // Sınıf dosyalarını dahil et.
+    if ( file_exists( NGIO_PLUGIN_DIR . 'includes/class-ngio-converter.php' ) ) {
+        require_once NGIO_PLUGIN_DIR . 'includes/class-ngio-converter.php';
+    }
+
+    if ( file_exists( NGIO_PLUGIN_DIR . 'admin/class-ngio-admin.php' ) ) {
+        require_once NGIO_PLUGIN_DIR . 'admin/class-ngio-admin.php';
+    }
+
+    if ( file_exists( NGIO_PLUGIN_DIR . 'admin/class-ngio-bulk.php' ) ) {
+        require_once NGIO_PLUGIN_DIR . 'admin/class-ngio-bulk.php';
+    }
+
+    if ( file_exists( NGIO_PLUGIN_DIR . 'includes/class-ngio-frontend.php' ) ) {
+        require_once NGIO_PLUGIN_DIR . 'includes/class-ngio-frontend.php';
+    }
+
+    // Sınıflar gerçekten varsa instance oluştur.
+    if ( class_exists( 'NGIO_Converter' ) ) {
+        $GLOBALS['ngio_converter'] = new NGIO_Converter();
+    }
+
+    if ( class_exists( 'NGIO_Admin' ) ) {
+        $GLOBALS['ngio_admin'] = new NGIO_Admin();
+    }
+
+    if ( class_exists( 'NGIO_Bulk' ) ) {
+        $GLOBALS['ngio_bulk'] = new NGIO_Bulk();
+    }
+
+    if ( class_exists( 'NGIO_Frontend' ) ) {
+        $GLOBALS['ngio_frontend'] = new NGIO_Frontend();
+    }
+}
+add_action( 'plugins_loaded', 'ngio_bootstrap', 20 );

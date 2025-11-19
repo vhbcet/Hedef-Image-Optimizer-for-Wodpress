@@ -59,6 +59,10 @@ msgstr "Açık"
 msgid "Off"
 msgstr "Kapalı"
 
+msgid "This plugin is built by %1$s and offered completely free. If you spot something missing or have ideas to improve it, feel free to email us at support@hedefhosting.com.tr"
+msgstr "Bu eklenti %1$s tarafından geliştirilmiş ve tamamen ücretsiz olarak sunulmaktadır. Eksik gördüğünüz bir yer veya geliştirmeye yardımcı olabilecek fikirleriniz olursa, support@hedefhosting.com.tr adresine e-posta atmaktan çekinmeyin."
+
+
 # =============================================================================
 # ADMIN SAYFASI – HERO / ÜST BANT
 # (Bu başlık metinleri class-ngio-admin.php içinde kullanılıyor.)

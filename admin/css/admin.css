@@ -105,6 +105,21 @@ body.settings_page_ngio-settings .ngio-settings-wrap {
 .ngio-hero-badge strong {
     font-weight: 600;
 }
+.ngio-hero-madeby {
+    padding-top: 10px !important;
+    font-size: 15px !important;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+.ngio-hero-madeby a {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+}
+
+.ngio-hero-madeby a:hover {
+    text-decoration-style: solid;
+}
 
 .ngio-status-dot {
     width: 9px;

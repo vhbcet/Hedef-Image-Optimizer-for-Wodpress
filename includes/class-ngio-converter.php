@@ -36,14 +36,14 @@ class NGIO_Converter {
      */
     protected $force_convert = false;
 
-     /**
+    /**
      * Constructor.
      */
     public function __construct() {
         $this->settings     = $this->get_settings();
         $this->capabilities = self::get_server_capabilities();
 
-        // Yeni: sadece "Optimize on upload" açıksa upload sırasında hook ekle.
+        // Sadece "Optimize on upload" açıksa upload sırasında hook ekle.
         if ( ! empty( $this->settings['auto_on_upload'] ) ) {
             add_filter(
                 'wp_generate_attachment_metadata',
@@ -69,43 +69,42 @@ class NGIO_Converter {
      * @return array
      */
     protected function get_settings() {
-    $defaults = array(
-        'enable_webp'              => 1,
-        'enable_avif'              => 1,
-        'quality'                  => 82,
-        'auto_on_upload'           => 1,
-        'enable_picture'           => 1,
-        'resize_enabled'           => 0,
-        'resize_max_width'         => 2048,
-        'strip_metadata'           => 1,
-        'exclude_patterns_enabled' => 0,
-        'exclude_patterns'         => '',
-    );
+        $defaults = array(
+            'enable_webp'              => 1,
+            'enable_avif'              => 1,
+            'quality'                  => 82,
+            'auto_on_upload'           => 1,
+            'enable_picture'           => 1,
+            'resize_enabled'           => 0,
+            'resize_max_width'         => 2048,
+            'strip_metadata'           => 1,
+            'exclude_patterns_enabled' => 0,
+            'exclude_patterns'         => '',
+        );
 
-    $saved = get_option( 'ngio_settings', array() );
-    if ( ! is_array( $saved ) ) {
-        $saved = array();
+        $saved = get_option( 'ngio_settings', array() );
+        if ( ! is_array( $saved ) ) {
+            $saved = array();
+        }
+
+        $settings = wp_parse_args( $saved, $defaults );
+
+        // Hard-sanitize critical values.
+        $settings['quality']          = max( 0, min( 100, (int) $settings['quality'] ) );
+        $settings['resize_max_width'] = max( 320, min( 8000, (int) $settings['resize_max_width'] ) );
+
+        $settings['enable_webp']    = (int) ! empty( $settings['enable_webp'] );
+        $settings['enable_avif']    = (int) ! empty( $settings['enable_avif'] );
+        $settings['auto_on_upload'] = (int) ! empty( $settings['auto_on_upload'] );
+        $settings['enable_picture'] = (int) ! empty( $settings['enable_picture'] );
+        $settings['resize_enabled'] = (int) ! empty( $settings['resize_enabled'] );
+        $settings['strip_metadata'] = (int) ! empty( $settings['strip_metadata'] );
+
+        $settings['exclude_patterns_enabled'] = (int) ! empty( $settings['exclude_patterns_enabled'] );
+        $settings['exclude_patterns']         = is_string( $settings['exclude_patterns'] ) ? $settings['exclude_patterns'] : '';
+
+        return $settings;
     }
-
-    $settings = wp_parse_args( $saved, $defaults );
-
-    // Hard-sanitize critical values.
-    $settings['quality']          = max( 0, min( 100, (int) $settings['quality'] ) );
-    $settings['resize_max_width'] = max( 320, min( 8000, (int) $settings['resize_max_width'] ) );
-
-    $settings['enable_webp']    = (int) ! empty( $settings['enable_webp'] );
-    $settings['enable_avif']    = (int) ! empty( $settings['enable_avif'] );
-    $settings['auto_on_upload'] = (int) ! empty( $settings['auto_on_upload'] );
-    $settings['enable_picture'] = (int) ! empty( $settings['enable_picture'] );
-    $settings['resize_enabled'] = (int) ! empty( $settings['resize_enabled'] );
-    $settings['strip_metadata'] = (int) ! empty( $settings['strip_metadata'] );
-
-    $settings['exclude_patterns_enabled'] = (int) ! empty( $settings['exclude_patterns_enabled'] );
-    $settings['exclude_patterns']         = is_string( $settings['exclude_patterns'] ) ? $settings['exclude_patterns'] : '';
-
-    return $settings;
-}
-
 
     /**
      * Detect server capabilities for WebP/AVIF via GD and Imagick.
@@ -169,13 +168,17 @@ class NGIO_Converter {
             return $metadata;
         }
 
-        // Which formats should we generate?
+        // Hangi format(lar) üretilecek? (En fazla bir tane)
         $formats = array();
-        if ( $this->settings['enable_webp'] && ! empty( $this->capabilities['webp_any'] ) ) {
-            $formats[] = 'webp';
-        }
-        if ( $this->settings['enable_avif'] && ! empty( $this->capabilities['avif_any'] ) ) {
+
+        $want_webp = ! empty( $this->settings['enable_webp'] ) && ! empty( $this->capabilities['webp_any'] );
+        $want_avif = ! empty( $this->settings['enable_avif'] ) && ! empty( $this->capabilities['avif_any'] );
+
+        // Tercih sırası: AVIF > WebP. Böylece hem WebP hem AVIF açık olsa bile sadece biri üretilir.
+        if ( $want_avif ) {
             $formats[] = 'avif';
+        } elseif ( $want_webp ) {
+            $formats[] = 'webp';
         }
 
         if ( empty( $formats ) ) {
@@ -246,15 +249,6 @@ class NGIO_Converter {
     }
 
     /**
-     * Convert a single physical file into one or more next-gen formats.
-     *
-     * @param string $source_path File path.
-     * @param string $mime        MIME type of original.
-     * @param string $size_key    Size identifier (full, thumbnail, etc.).
-     * @param array  $formats     Formats to generate (webp, avif).
-     * @param array  $stats       Stats array (by reference).
-     */
-         /**
      * Check if a given file path should be excluded from optimization.
      *
      * @param string $source_path File path.
@@ -298,22 +292,31 @@ class NGIO_Converter {
         return false;
     }
 
+    /**
+     * Convert a single physical file into one or more next-gen formats.
+     *
+     * @param string $source_path File path.
+     * @param string $mime        MIME type of original.
+     * @param string $size_key    Size identifier (full, thumbnail, etc.).
+     * @param array  $formats     Formats to generate (webp, avif).
+     * @param array  $stats       Stats array (by reference).
+     */
     protected function convert_file_for_formats( $source_path, $mime, $size_key, $formats, &$stats ) {
-    // Önce exclude kuralları devreye girsin.
-    if ( $this->should_exclude_file( $source_path ) ) {
-        return;
-    }
+        // Önce exclude kuralları devreye girsin.
+        if ( $this->should_exclude_file( $source_path ) ) {
+            return;
+        }
 
-    $original_bytes = @filesize( $source_path );
-    if ( $original_bytes ) {
-        $stats['original_bytes'] += (int) $original_bytes;
-    }
+        $original_bytes = @filesize( $source_path );
+        if ( $original_bytes ) {
+            $stats['original_bytes'] += (int) $original_bytes;
+        }
 
-    foreach ( $formats as $format ) {
+        foreach ( $formats as $format ) {
             $dest_path = $source_path . '.' . $format;
 
             if ( ! $this->force_convert && file_exists( $dest_path ) ) {
-                // Already there – still count its size towards "nextgen_bytes".
+                // Zaten varsa bile, boyutu "nextgen_bytes" içine ekle.
                 $next_bytes = @filesize( $dest_path );
                 if ( $next_bytes ) {
                     $stats['nextgen_bytes'] += (int) $next_bytes;
@@ -343,7 +346,7 @@ class NGIO_Converter {
      * @return bool
      */
     protected function create_nextgen_file( $source_path, $dest_path, $mime, $format ) {
-        // Prefer Imagick for AVIF (and generally when available).
+        // Prefer Imagick when available.
         $use_imagick = false;
 
         if ( 'webp' === $format && ! empty( $this->capabilities['webp_imagick'] ) ) {
