@@ -32,13 +32,6 @@ if ( ! defined( 'NGIO_PLUGIN_URL' ) ) {
     define( 'NGIO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 }
 
-function ngio_load_textdomain() {
-    load_plugin_textdomain(
-        'nextgen-image-optimizer',
-        false,
-        dirname( plugin_basename( NGIO_PLUGIN_FILE ) ) . '/languages/'
-    );
-}
 add_action( 'plugins_loaded', 'ngio_load_textdomain' );
 
 function ngio_bootstrap() {
