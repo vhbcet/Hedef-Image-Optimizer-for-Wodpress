@@ -1,15 +1,15 @@
 <?php
 /**
- * Plugin Name: NextGen Image Optimizer
- * Plugin URI:  https://hedefhosting.com.tr/
- * Description: Convert JPEG and PNG images to modern WebP and AVIF formats on upload or in bulk, and optionally serve them using <picture> tags. 100% local – no external API.
- * Author:      Hedef Hosting
- * Author URI:  https://hedefhosting.com.tr/
- * Version:     0.1.0
- * Text Domain: nextgen-image-optimizer
- * Domain Path: /languages
- * License:     GPLv2 or later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Plugin Name:       NextGen Image Optimizer
+ * Plugin URI:        https://github.com/vhbcet/NextGen-Image-Optimizer-for-Wodpress
+ * Description:       Convert JPEG and PNG images to modern WebP and AVIF formats on upload or in bulk, and optionally serve them using <picture> tags.
+ * Version:           0.1.0
+ * Author:            Hedef Hosting
+ * Author URI:        https://hedefhosting.com.tr/
+ * License:           GPLv2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       nextgen-image-optimizer
+ * Domain Path:       /languages
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
