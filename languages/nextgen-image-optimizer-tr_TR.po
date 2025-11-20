@@ -178,6 +178,10 @@ msgstr "Kalite ayarlarını güvenle değiştirebilmeniz için orijinal dosyalar
 msgid "Quality & size"
 msgstr "Kalite ve boyut"
 
+msgid "Run optimization on upload"
+msgstr "Yüklerken optimize et"
+
+
 msgid "Control the balance between visual quality and file size."
 msgstr "Görsel kalite ile dosya boyutu arasındaki dengeyi kontrol edin."
 
@@ -452,7 +456,7 @@ msgid "Fine-tune the balance between visual quality and file size."
 msgstr "Görsel kalite ile dosya boyutu arasındaki dengeye ince ayar yapın."
 
 msgid "Quality level (0–100)"
-msgstr "Kaliye seviyesi (0–100)"
+msgstr "Kalite seviyesi (0–100)"
 
 msgid "Images to optimize"
 msgstr "Optimize edilecek görsel"

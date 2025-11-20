@@ -168,7 +168,7 @@ body.settings_page_ngio-settings .ngio-settings-wrap {
 
 .ngio-settings-grid {
     display: grid;
-    grid-template-columns: 5fr 3fr;
+    grid-template-columns: 6fr 3fr;
     grid-template-rows: auto auto;
     grid-template-areas:
         "ngio-main   ngio-server"
@@ -312,7 +312,7 @@ body.settings_page_ngio-settings .ngio-settings-wrap {
 }
 
 .ngio-options-table th {
-    width: 60%;
+    width: 65%;
     padding-right: 16px;
 }
 
@@ -345,7 +345,7 @@ body.settings_page_ngio-settings .ngio-settings-wrap {
 .ngio-toggle {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 5px;
     cursor: pointer;
     user-select: none;
 }
@@ -409,12 +409,13 @@ body.settings_page_ngio-settings .ngio-settings-wrap {
 }
 
 .ngio-quality-number {
-    width: 70px;
+    width: 60px;
     text-align: right;
     font-size: 13px;
 }
 
 .ngio-quality-percent {
+    margin-left: -5px;
     font-size: 12px;
     color: #6b7280;
 }

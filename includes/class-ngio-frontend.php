@@ -23,8 +23,8 @@ class NGIO_Frontend {
     public function __construct() {
         $this->settings = $this->get_settings();
 
+        // Frontend <picture> entegrasyonu kapalı ise hiçbir hook eklemeyelim.
         if ( empty( $this->settings['enable_picture'] ) ) {
-            // Frontend picture entegrasyonu kapalı ise hiçbir hook eklemeyelim.
             return;
         }
 
@@ -32,7 +32,7 @@ class NGIO_Frontend {
         add_filter( 'wp_get_attachment_image', array( $this, 'filter_attachment_image_html' ), 20, 5 );
         add_filter( 'post_thumbnail_html', array( $this, 'filter_post_thumbnail_html' ), 20, 5 );
 
-        // İçerikteki wp-image-123 sınıflı <img> etiketleri.
+        // İçerikteki <img> etiketleri (hem wp-image-123 sınıflı, hem de sadece src ile eklenmişler).
         add_filter( 'the_content', array( $this, 'filter_content_images' ), 20 );
     }
 
@@ -81,7 +81,10 @@ class NGIO_Frontend {
     }
 
     /**
-     * the_content filtresi: wp-image-123 class'lı <img> etiketlerini yakalar.
+     * the_content filtresi:
+     * - wp-image-123 sınıflı img'leri bulur
+     * - sınıf yoksa src URL'sinden attachment ID çıkarmaya çalışır
+     * - ID bulunursa ilgili <img> tag'ini <picture> ile değiştirir
      */
     public function filter_content_images( $content ) {
         if ( false === strpos( $content, '<img' ) ) {
@@ -91,10 +94,38 @@ class NGIO_Frontend {
         $self = $this;
 
         $content = preg_replace_callback(
-            '/<img[^>]+class=["\'][^"\']*wp-image-(\d+)[^"\']*["\'][^>]*>/i',
+            '/<img[^>]*>/i',
             function ( $matches ) use ( $self ) {
-                $img_html      = $matches[0];
-                $attachment_id = (int) $matches[1];
+                $img_html = $matches[0];
+
+                // Zaten bizim picture çıktımızın içinde ise tekrar dokunmayalım.
+                if ( false !== stripos( $img_html, 'ngio-picture' ) ) {
+                    return $img_html;
+                }
+
+                $attachment_id = 0;
+
+                // 1) Önce wp-image-123 sınıfını dene.
+                if ( preg_match( '/wp-image-(\d+)/i', $img_html, $id_match ) ) {
+                    $attachment_id = (int) $id_match[1];
+
+                // 2) Yoksa src="" içinden attachment_url_to_postid ile çözmeye çalış.
+                } elseif ( preg_match( '/src=["\']([^"\']+)["\']/i', $img_html, $src_match ) ) {
+                    $src = $src_match[1];
+
+                    // Protokolsüz veya relatif URL'leri normalize et.
+                    if ( 0 === strpos( $src, '//' ) ) {
+                        $src = ( is_ssl() ? 'https:' : 'http:' ) . $src;
+                    } elseif ( 0 === strpos( $src, '/' ) && 0 !== strpos( $src, 'http' ) ) {
+                        $src = home_url( $src );
+                    }
+
+                    $attachment_id = attachment_url_to_postid( $src );
+                }
+
+                if ( $attachment_id <= 0 ) {
+                    return $img_html;
+                }
 
                 return $self->build_picture_markup( $img_html, $attachment_id );
             },
@@ -138,12 +169,15 @@ class NGIO_Frontend {
             return $html;
         }
 
-                $formats = (array) $meta['ngio']['formats'];
+        $formats = (array) $meta['ngio']['formats'];
 
         // Eski meta içinde hem webp hem avif olabilir; ayarlarla uyumlu son listeyi çıkaralım.
         $has_webp = in_array( 'webp', $formats, true ) && ! empty( $this->settings['enable_webp'] );
+
         // AVIF sadece WebP kapalıysa kullanılacak:
-        $has_avif = in_array( 'avif', $formats, true ) && ! empty( $this->settings['enable_avif'] ) && empty( $this->settings['enable_webp'] );
+        $has_avif = in_array( 'avif', $formats, true )
+            && ! empty( $this->settings['enable_avif'] )
+            && empty( $this->settings['enable_webp'] );
 
         $final_formats = array();
         if ( $has_avif ) {
@@ -172,7 +206,6 @@ class NGIO_Frontend {
         if ( in_array( 'webp', $final_formats, true ) ) {
             $sources .= '<source type="image/webp" srcset="' . esc_url( $src . '.webp' ) . '">';
         }
-
 
         if ( ! $sources ) {
             return $html;
