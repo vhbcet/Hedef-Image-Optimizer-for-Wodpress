@@ -1,28 +1,24 @@
-![NextGen Image Optimizer banner](assets/banner-772x250.png)
-
 === NextGen Image Optimizer ===
-Contributors: hedefhosting  
-Donate link: https://hedefhosting.com.tr/  
-Tags: image optimization, webp, avif, performance, images, responsive images  
-Requires at least: 6.5  
-Tested up to: 6.7  
-Requires PHP: 8.1  
-Stable tag: 0.1.0  
-License: GPLv2 or later  
-License URI: https://www.gnu.org/licenses/gpl-2.0.html  
+Contributors: hedefhosting
+Donate link: https://hedefhosting.com.tr/
+Tags: image optimization, webp, avif, performance, images, responsive images
+Requires at least: 6.5
+Tested up to: 6.7
+Requires PHP: 8.1
+Stable tag: 0.1.0
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Convert JPEG and PNG images to modern WebP and AVIF formats on upload or in bulk, and optionally serve them using `<picture>` tags – with everything processed locally on your own server.
+Convert JPEG and PNG images to modern WebP and AVIF formats on upload or in bulk, and optionally serve them using <picture> tags – with everything processed locally on your own server.
 
----
+== Description ==
 
-## Description
+NextGen Image Optimizer is a lightweight but powerful image optimization plugin that converts your JPEG and PNG uploads into modern WebP and AVIF formats.
 
-**NextGen Image Optimizer** is a lightweight but powerful image optimization plugin that converts your JPEG and PNG uploads into modern **WebP** and **AVIF** formats.
+All conversions happen locally on your server using GD and/or Imagick – there is no external API, no remote storage and no extra monthly bills.
 
-All conversions happen **locally on your server** using GD and/or Imagick – there is **no external API**, no remote storage and no extra monthly bills.
-
-The plugin is developed and maintained by **[Hedef Hosting](https://hedefhosting.com.tr/)** and is provided completely free of charge.  
-If you have ideas, bug reports or feature requests, feel free to email us at **support@hedefhosting.com.tr** 💌
+The plugin is developed and maintained by [Hedef Hosting](https://hedefhosting.com.tr/) and is provided completely free of charge.  
+If you have ideas, bug reports or feature requests, feel free to email us at support@hedefhosting.com.tr.
 
 It focuses on three main goals:
 
@@ -30,61 +26,55 @@ It focuses on three main goals:
 * **Modern formats** – Use WebP and AVIF when supported by your server and your visitors’ browsers.
 * **Simple control** – Configure everything from a single, polished settings page.
 
-### Key Features
+=== Key Features ===
 
-* Automatically convert JPEG/JPG and PNG images to **WebP** and/or **AVIF** on upload.
-* **Bulk optimization** tool for existing Media Library images, with:
+* Automatically convert JPEG/JPG and PNG images to WebP and/or AVIF on upload.
+* Bulk optimization tool for existing Media Library images, with:
   * Progress bar and live log of processed items.
   * “Run again” support to refresh images after changing quality or resize settings.
-* **Media Library “NextGen” column**:
+* Media Library “NextGen” column:
   * See per-image status, new filesize, and percentage of space saved.
-  * One-click **Re-optimize** and **Restore original** actions (if you keep originals).
-* **Per-image controls** in the attachment edit screen:
+  * One-click Re-optimize and Restore original actions (if you keep originals).
+* Per-image controls in the attachment edit screen:
   * Optimize/Re-optimize just that image.
   * Override the global “Optimize on upload” setting.
-* **Server capabilities checker** for GD / Imagick WebP and AVIF support.
-* Optional frontend integration using `<picture>` tags with WebP/AVIF `<source>` elements:
+* Server capabilities checker for GD / Imagick WebP and AVIF support.
+* Optional frontend integration using <picture> tags with WebP/AVIF <source> elements:
   * Modern browsers get AVIF/WebP.
   * Older browsers fall back to the original image.
-* Adjustable **compression quality** (0–100) with recommended ranges.
-* Optional **resize** of next-gen copies above a configurable max width (e.g. 2048px).
-* Optional **EXIF/IPTC metadata stripping** from next-gen copies to further reduce filesize.
-* **Exclusion rules**:
-  * Skip specific images based on filename or path (e.g. `logo`, `/icons/`, `avatar-`).
+* Adjustable compression quality (0–100) with recommended ranges.
+* Optional resize of next-gen copies above a configurable max width (e.g. 2048px).
+* Optional EXIF/IPTC metadata stripping from next-gen copies to further reduce filesize.
+* Exclusion rules:
+  * Skip specific images based on filename or path (e.g. logo, /icons/, avatar-).
 * Works with:
   * WordPress Media Library
-  * `wp_get_attachment_image()`
+  * wp_get_attachment_image()
   * Featured images and most themes/page builders.
-* **Localization**:
+* Localization:
   * English (en_US)
   * Turkish (tr_TR) – full translation of the admin UI and bulk screens.
 
 Everything is designed to blend nicely into the WordPress admin with a clean, modern UI.
 
----
+== How It Works ==
 
-## How It Works
-
-1. When you upload a JPEG or PNG image, the plugin can automatically generate `.webp` and/or `.avif` versions (depending on your settings and server capabilities).
+1. When you upload a JPEG or PNG image, the plugin can automatically generate .webp and/or .avif versions (depending on your settings and server capabilities).
 2. For existing images, use the **Media → Bulk Optimize (NGIO)** screen to scan the Media Library and generate missing next-gen versions in small batches.
-3. On the frontend, you can enable the `<picture>` integration so that supported browsers will load AVIF / WebP, while older browsers still get the original image.
-4. The plugin stores lightweight stats in attachment metadata (`ngio`) so you can see how much space you’ve saved on each image and across the library.
+3. On the frontend, you can enable the <picture> integration so that supported browsers will load AVIF / WebP, while older browsers still get the original image.
+4. The plugin stores lightweight stats in attachment metadata (ngio) so you can see how much space you’ve saved on each image and across the library.
 
----
+== Requirements ==
 
-## Requirements
-
-* **PHP** 8.1 or higher (for AVIF support through GD or Imagick).
-* **WordPress** 6.5 or higher.
+* PHP 8.1 or higher (for AVIF support through GD or Imagick).
+* WordPress 6.5 or higher.
 * One of:
-  * PHP **GD** extension compiled with WebP/AVIF support.
-  * PHP **Imagick** extension with WEBP/AVIF codecs enabled.
+  * PHP GD extension compiled with WebP/AVIF support.
+  * PHP Imagick extension with WEBP/AVIF codecs enabled.
 
 If your server is missing some of these, the **Server support** box on the settings page will clearly show what’s available and what is not.
 
----
-
-## Installation
+== Installation ==
 
 1. Upload the `nextgen-image-optimizer` folder to the `/wp-content/plugins/` directory,  
    or install it via the WordPress.org plugin repository (when available).
@@ -93,30 +83,28 @@ If your server is missing some of these, the **Server support** box on the setti
    * Which formats to generate (WebP, AVIF, or both).
    * Quality level and optional resizing.
    * Whether to optimize images automatically on upload.
-   * Whether to serve images via `<picture>` on the frontend.
+   * Whether to serve images via <picture> on the frontend.
    * Optional exclusion patterns.
 4. (Optional) Go to **Media → Bulk Optimize (NGIO)** to convert existing images.
 
----
+== Usage ==
 
-## Usage
-
-### 1. Choose formats and automation
+=== 1. Choose formats and automation ===
 
 On the **Settings → Image Optimizer** page:
 
-* Enable **WebP**, **AVIF**, or both, depending on your server capabilities.
+* Enable WebP, AVIF, or both, depending on your server capabilities.
 * Turn on **Optimize on upload** if you want new images to be processed automatically.
-* Enable **Serve via `<picture>`** to send WebP/AVIF to compatible browsers.
+* Enable **Serve via <picture>** to send WebP/AVIF to compatible browsers.
 
 You can also:
 
-* Pick a **Quality level** (e.g. 80–85 for most sites).
+* Pick a quality level (e.g. 80–85 for most sites).
 * Enable **Resize next-gen copies** and set a max width (e.g. 2048px).
 * Enable **Strip metadata** to remove EXIF/IPTC from generated copies.
 * Add **Exclusion patterns** (one per line) to skip specific images.
 
-### 2. Bulk optimization
+=== 2. Bulk optimization ===
 
 Go to **Media → Bulk Optimize (NGIO)**:
 
@@ -125,14 +113,14 @@ Go to **Media → Bulk Optimize (NGIO)**:
 * The log will list each optimized attachment.
 * If you change quality or resize settings later, you can run bulk optimization again – existing next-gen copies will be refreshed.
 
-### 3. Per-image controls
+=== 3. Per-image controls ===
 
 In **Media → Library** (list view):
 
 * Use the **NextGen** column to see:
   * Status (optimized/not optimized).
   * New filesize and percentage of space saved.
-  * Links to **Re-optimize** and **Restore original**.
+  * Links to Re-optimize and Restore original.
 
 In the **attachment edit screen**:
 
@@ -140,16 +128,14 @@ In the **attachment edit screen**:
   * Optimize/re-optimize just that image.
   * Override the global “Optimize on upload” behaviour.
 
----
+== Frequently Asked Questions ==
 
-## Frequently Asked Questions
+= Does this plugin modify my original image files? =
 
-### Does this plugin modify my original image files?
-
-By default the plugin keeps your original JPEG/PNG files untouched and creates additional `.webp` and `.avif` versions in the same upload folder.  
+By default the plugin keeps your original JPEG/PNG files untouched and creates additional .webp and .avif versions in the same upload folder.  
 If you enable “backup originals” in future versions, restoring will become even easier.
 
-### Will it work if my server does not support WebP or AVIF?
+= Will it work if my server does not support WebP or AVIF? =
 
 If your server cannot generate WebP and/or AVIF, the plugin will show this in the **Server support** section on the settings page.  
 In that case:
@@ -157,64 +143,51 @@ In that case:
 * Only the supported formats will be generated, or  
 * If neither WebP nor AVIF is available, conversion is skipped while your originals remain untouched.
 
-### How does the `<picture>` option affect my theme?
+= How does the <picture> option affect my theme? =
 
-When enabled, the plugin wraps images output by `wp_get_attachment_image()` and featured images in a `<picture>` tag, adding `<source>` elements for WebP and AVIF.  
-The original `<img>` tag remains inside, so themes usually continue to work as expected. If a browser doesn’t support WebP/AVIF, it simply loads the original image.
+When enabled, the plugin wraps images output by `wp_get_attachment_image()` and featured images in a <picture> tag, adding <source> elements for WebP and AVIF.  
+The original <img> tag remains inside, so themes usually continue to work as expected. If a browser doesn’t support WebP/AVIF, it simply loads the original image.
 
-### Can I disable optimization for specific images?
+= Can I disable optimization for specific images? =
 
 Yes. You can:
 
 * Use **exclusion patterns** (e.g. `logo`, `/icons/`, `avatar-`) so matching files are never converted, or
 * Override the global auto-optimize setting for individual images from their attachment edit screen.
 
-### Can I remove the generated files if I uninstall the plugin?
+= Can I remove the generated files if I uninstall the plugin? =
 
-By default, uninstalling the plugin removes only its **settings**. The generated image files remain in the uploads directory.  
+By default, uninstalling the plugin removes only its settings. The generated image files remain in the uploads directory.  
 This is intentional to avoid breaking existing content. You can remove them manually (or via a dedicated cleanup tool) if needed.
 
-### Does the plugin send any data to external services?
+= Does the plugin send any data to external services? =
 
-No. All conversions happen locally on your server. The plugin does **not** send your images to any external service or CDN.
+No. All conversions happen locally on your server. The plugin does not send your images to any external service or CDN.
 
----
+== Screenshots ==
 
-## Screenshots
+1. Settings page – main configuration, conversion formats, automation, quality and server support.  
+2. Bulk optimization screen – progress bar, global overview donut and per-image log.  
+3. Media Library NextGen column – per-image status, savings, and quick actions.
 
-1. **Settings page** – main configuration, conversion formats, automation, quality and server support.  
-2. **Bulk optimization screen** – progress bar, global overview donut and per-image log.  
-3. **Media Library NextGen column** – per-image status, savings, and quick actions.
+== Changelog ==
 
----
-
-## Changelog
-
-### 0.1.0
+= 0.1.0 =
 
 * Initial public release.
 * Automatic WebP/AVIF conversion on upload (when supported).
 * Bulk optimization screen under **Media → Bulk Optimize (NGIO)**.
 * Server support checker for GD / Imagick WebP and AVIF capabilities.
-* Optional `<picture>` / `srcset` integration on the frontend.
+* Optional <picture> / srcset integration on the frontend.
 * Quality, resize and metadata stripping controls.
-
----
-
-## License
-
-NextGen Image Optimizer is free software released under the **GNU General Public License v2.0 or later**. You can redistribute it and/or modify it under the terms of the GPL as published by the Free Software Foundation. See [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gnu.org/licenses/gpl-2.0.html) for the full license text.
 * Exclusion patterns for filenames/paths.
 * Media Library “NextGen” column with per-image stats and actions.
 * Per-attachment metabox for manual optimization.
 * English and Turkish translations.
 * Modern, polished admin UI with donut chart and progress bar.
 
----
+== License ==
 
-## Upgrade Notice
-
-### 0.1.0
-
-Initial release of NextGen Image Optimizer.  
-Configure your formats and quality, then run the bulk optimizer once to convert your existing Media Library.
+NextGen Image Optimizer is free software released under the **GNU General Public License v2.0 or later**.  
+You can redistribute it and/or modify it under the terms of the GPL as published by the Free Software Foundation.  
+See https://www.gnu.org/licenses/gpl-2.0.html for the full license text.
