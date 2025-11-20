@@ -8,10 +8,12 @@ class NGIO_Core {
 
     private static $instance = null;
 
+
     private $converter = null;
 
     private function __construct() {
     }
+
 
     public static function instance() {
         if ( null === self::$instance ) {
@@ -21,22 +23,24 @@ class NGIO_Core {
         return self::$instance;
     }
 
+
     public static function activate() {
         if ( ! get_option( 'ngio_settings' ) ) {
             add_option(
                 'ngio_settings',
                 array(
-                    'enable_webp'     => 1,
-                    'enable_avif'     => 1,
-                    'quality'         => 82,
-                    'auto_on_upload'  => 1,
-                    'enable_picture'  => 1,
+                    'enable_webp'    => 1,
+                    'enable_avif'    => 1,
+                    'quality'        => 82,
+                    'auto_on_upload' => 1,
+                    'enable_picture' => 1,
                 )
             );
         }
     }
 
     public static function deactivate() {
+
     }
 
     public function get_converter() {
@@ -49,7 +53,6 @@ class NGIO_Core {
     }
 
     public function run() {
-        add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 
         $converter = $this->get_converter();
 
@@ -70,13 +73,5 @@ class NGIO_Core {
             require_once NGIO_PLUGIN_DIR . 'includes/class-ngio-bulk.php';
             new NGIO_Bulk();
         }
-    }
-
-    public function load_textdomain() {
-        load_plugin_textdomain(
-            'nextgen-image-optimizer',
-            false,
-            dirname( plugin_basename( NGIO_PLUGIN_FILE ) ) . '/languages'
-        );
     }
 }
