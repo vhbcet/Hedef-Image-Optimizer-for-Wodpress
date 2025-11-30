@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function ngio_load_textdomain() {
-    load_plugin_textdomain( 'hedef-image-optimizer', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+    load_plugin_textdomain( 'hedef-image-optimizer-webp-avif', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }
 
 add_action( 'init', 'ngio_load_textdomain' );
