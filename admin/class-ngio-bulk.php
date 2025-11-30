@@ -212,13 +212,12 @@ class NGIO_Bulk {
 
                     <p class="ngio-bulk-overview-note">
                         <?php
-                        /* translators: 1: total space saved (human readable), 2: saving percentage, 3: original total size (human readable). */
-                            printf(
-                            esc_html__( 'You\'ve already saved %1$s (%2$d%% of %3$s) across optimized images.', 'hedef-image-optimizer-webp-avif' ),
-                            esc_html( $overview['saved_human'] ),
-                            (int) $overview['saving_percent'],
-                            esc_html( $overview['original_human'] )
-                            );
+/* translators: 1: number of optimized images, 2: total number of images. */
+printf(
+    esc_html__( 'Optimized %1$d of %2$d images so far…', 'hedef-image-optimizer-webp-avif' ),
+    (int) $done,
+    (int) $total
+);
                             ?>
                     </p>
                 </section>
