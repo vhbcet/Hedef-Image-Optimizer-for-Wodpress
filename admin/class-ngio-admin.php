@@ -371,13 +371,15 @@ function ngio_get_server_capabilities() {
                                 <span class="dashicons dashicons-chart-pie"></span>
                                 <strong><?php esc_html_e( 'Space saved', 'hedef-image-optimizer-webp-avif' ); ?></strong>
                                 <span>
-                                    <?php
-                                        /* translators: %d: sampled saving percentage. */
-                                        printf(
-                                        esc_html__( '%d%% (sampled)', 'hedef-image-optimizer-webp-avif' ),
-                                        (int) $media_overview['saving_percent']
-                                        );
-                                    ?>
+<?php
+/* translators: 1: total space saved (human readable), 2: saving percentage, 3: original total size (human readable). */
+printf(
+    esc_html__( 'You\'ve already saved %1$s (%2$d%% of %3$s) across optimized images.', 'hedef-image-optimizer-webp-avif' ),
+    esc_html( $overview['saved_human'] ),
+    (int) $overview['saving_percent'],
+    esc_html( $overview['original_human'] )
+);
+?>
                                 </span>
                             </span>
                         </div><p class="ngio-hero-madeby">
