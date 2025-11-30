@@ -1,20 +1,27 @@
 <?php
 /**
- * Plugin Name:       NextGen Image Optimizer
- * Plugin URI:        https://github.com/vhbcet/NextGen-Image-Optimizer-for-Wodpress
+ * Plugin Name:       Hedef Image Optimizer
+ * Plugin URI:        https://github.com/vhbcet/Hedef-Image-Optimizer-for-Wodpress
  * Description:       Convert JPEG and PNG images to modern WebP and AVIF formats on upload or in bulk, and optionally serve them using <picture> tags.
  * Version:           0.1.0
  * Author:            Hedef Hosting
  * Author URI:        https://hedefhosting.com.tr/
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       nextgen-image-optimizer
+ * Text Domain:       hedef-image-optimizer
  * Domain Path:       /languages
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
+
+function ngio_load_textdomain() {
+    load_plugin_textdomain( 'hedef-image-optimizer', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+}
+
+add_action( 'init', 'ngio_load_textdomain' );
+
 
 if ( ! defined( 'NGIO_VERSION' ) ) {
     define( 'NGIO_VERSION', '0.1.0' );
