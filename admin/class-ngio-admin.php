@@ -134,8 +134,8 @@ function ngio_get_server_capabilities() {
 
     public function add_settings_page() {
         add_options_page(
-            __( 'NextGen Image Optimizer', 'nextgen-image-optimizer' ),
-            __( 'Image Optimizer', 'nextgen-image-optimizer' ),
+            __( 'Hedef Image Optimizer', 'hedef-image-optimizer' ),
+            __( 'Image Optimizer', 'hedef-image-optimizer' ),
             'manage_options',
             'ngio-settings',
             array( $this, 'render_settings_page' )
@@ -190,9 +190,9 @@ function ngio_get_server_capabilities() {
                     array(
                         'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
                         'nonce'       => wp_create_nonce( 'ngio_optimize_single' ),
-                        'textWorking' => __( 'Re-optimizing this image…', 'nextgen-image-optimizer' ),
-                        'textDone'    => __( 'Image optimization completed.', 'nextgen-image-optimizer' ),
-                        'textError'   => __( 'Could not optimize this image.', 'nextgen-image-optimizer' ),
+                        'textWorking' => __( 'Re-optimizing this image…', 'hedef-image-optimizer' ),
+                        'textDone'    => __( 'Image optimization completed.', 'hedef-image-optimizer' ),
+                        'textError'   => __( 'Could not optimize this image.', 'hedef-image-optimizer' ),
                     )
                 );
             }
@@ -221,13 +221,13 @@ function ngio_get_server_capabilities() {
                 array(
                     'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
                     'nonce'           => wp_create_nonce( 'ngio_optimize_single' ),
-                    'textWorking'     => __( 'Optimizing image…', 'nextgen-image-optimizer' ),
-                    'textDone'        => __( 'Image optimized.', 'nextgen-image-optimizer' ),
-                    'textError'       => __( 'Optimization failed.', 'nextgen-image-optimizer' ),
-                    'textDetailsOpen'  => __( 'View details', 'nextgen-image-optimizer' ),
-                    'textDetailsClose' => __( 'Close details', 'nextgen-image-optimizer' ),
-                    'textNotOptimized' => __( 'Not optimized yet', 'nextgen-image-optimizer' ),
-                    'confirmRestore'   => __( 'Remove WebP/AVIF copies for this image and keep only the original?', 'nextgen-image-optimizer' ),
+                    'textWorking'     => __( 'Optimizing image…', 'hedef-image-optimizer' ),
+                    'textDone'        => __( 'Image optimized.', 'hedef-image-optimizer' ),
+                    'textError'       => __( 'Optimization failed.', 'hedef-image-optimizer' ),
+                    'textDetailsOpen'  => __( 'View details', 'hedef-image-optimizer' ),
+                    'textDetailsClose' => __( 'Close details', 'hedef-image-optimizer' ),
+                    'textNotOptimized' => __( 'Not optimized yet', 'hedef-image-optimizer' ),
+                    'confirmRestore'   => __( 'Remove WebP/AVIF copies for this image and keep only the original?', 'hedef-image-optimizer' ),
                 )
             );
         }
@@ -357,23 +357,23 @@ function ngio_get_server_capabilities() {
                         <span>NGIO</span>
                     </div>
                     <div class="ngio-hero-text">
-                        <h1><?php esc_html_e( 'NextGen Image Optimizer', 'nextgen-image-optimizer' ); ?></h1>
+                        <h1><?php esc_html_e( 'Hedef Image Optimizer', 'hedef-image-optimizer' ); ?></h1>
                         <p>
-                            <?php esc_html_e( 'Convert your JPEG and PNG uploads to modern WebP/AVIF, automatically serve them on the frontend and track how much weight you save.', 'nextgen-image-optimizer' ); ?>
+                            <?php esc_html_e( 'Convert your JPEG and PNG uploads to modern WebP/AVIF, automatically serve them on the frontend and track how much weight you save.', 'hedef-image-optimizer' ); ?>
                         </p>
                         <div class="ngio-hero-badges">
                             <span class="ngio-hero-badge">
                                 <span class="ngio-status-dot ngio-status-dot--ok"></span>
-                                <strong><?php esc_html_e( 'Auto optimize', 'nextgen-image-optimizer' ); ?></strong>
-                                <span><?php esc_html_e( 'on upload & in bulk', 'nextgen-image-optimizer' ); ?></span>
+                                <strong><?php esc_html_e( 'Auto optimize', 'hedef-image-optimizer' ); ?></strong>
+                                <span><?php esc_html_e( 'on upload & in bulk', 'hedef-image-optimizer' ); ?></span>
                             </span>
                             <span class="ngio-hero-badge">
                                 <span class="dashicons dashicons-chart-pie"></span>
-                                <strong><?php esc_html_e( 'Space saved', 'nextgen-image-optimizer' ); ?></strong>
+                                <strong><?php esc_html_e( 'Space saved', 'hedef-image-optimizer' ); ?></strong>
                                 <span>
                                     <?php
                                     printf(
-                                        esc_html__( '%d%% (sampled)', 'nextgen-image-optimizer' ),
+                                        esc_html__( '%d%% (sampled)', 'hedef-image-optimizer' ),
                                         (int) $media_overview['saving_percent']
                                     );
                                     ?>
@@ -382,7 +382,7 @@ function ngio_get_server_capabilities() {
                         </div><p class="ngio-hero-madeby">
     <?php
     printf(
-        __( 'This plugin is built by %1$s and offered completely free. If you spot something missing or have ideas to improve it, feel free to email us at support@hedefhosting.com.tr', 'nextgen-image-optimizer' ),
+        __( 'This plugin is built by %1$s and offered completely free. If you spot something missing or have ideas to improve it, feel free to email us at support@hedefhosting.com.tr', 'hedef-image-optimizer' ),
         '<a href="https://hedefhosting.com.tr/" target="_blank" rel="noopener noreferrer">Hedef Hosting</a>'
     );
     ?>
@@ -391,10 +391,10 @@ function ngio_get_server_capabilities() {
                 </div>
                 <div class="ngio-hero-right">
                     <a href="<?php echo esc_url( admin_url( 'upload.php?page=ngio-bulk' ) ); ?>" class="button button-primary ngio-hero-button">
-                        <?php esc_html_e( 'Open bulk optimizer', 'nextgen-image-optimizer' ); ?>
+                        <?php esc_html_e( 'Open bulk optimizer', 'hedef-image-optimizer' ); ?>
                     </a>
                     <a href="<?php echo esc_url( admin_url( 'upload.php' ) ); ?>" class="button button-secondary ngio-hero-button ngio-hero-button-secondary">
-                        <?php esc_html_e( 'Go to Media Library', 'nextgen-image-optimizer' ); ?>
+                        <?php esc_html_e( 'Go to Media Library', 'hedef-image-optimizer' ); ?>
                     </a>
                 </div>
             </div>
@@ -410,10 +410,10 @@ function ngio_get_server_capabilities() {
                         <header class="ngio-card-header">
                             <h2>
                                 <span class="dashicons dashicons-admin-generic"></span>
-                                <?php esc_html_e( 'Configuration', 'nextgen-image-optimizer' ); ?>
+                                <?php esc_html_e( 'Configuration', 'hedef-image-optimizer' ); ?>
                             </h2>
                             <p class="ngio-card-subtitle">
-                                <?php esc_html_e( 'Choose your output formats, automation rules and compression settings.', 'nextgen-image-optimizer' ); ?>
+                                <?php esc_html_e( 'Choose your output formats, automation rules and compression settings.', 'hedef-image-optimizer' ); ?>
                             </p>
                         </header>
 
@@ -421,38 +421,38 @@ function ngio_get_server_capabilities() {
                             <!-- Block 1: Output formats -->
                             <div class="ngio-settings-block ngio-settings-block--blue">
                                 <div class="ngio-settings-block-header">
-                                    <h3><?php esc_html_e( 'Output formats', 'nextgen-image-optimizer' ); ?></h3>
-                                    <p><?php esc_html_e( 'Enable the formats you want to generate from JPEG/PNG uploads.', 'nextgen-image-optimizer' ); ?></p>
+                                    <h3><?php esc_html_e( 'Output formats', 'hedef-image-optimizer' ); ?></h3>
+                                    <p><?php esc_html_e( 'Enable the formats you want to generate from JPEG/PNG uploads.', 'hedef-image-optimizer' ); ?></p>
                                 </div>
                                 <div class="ngio-settings-block-body">
                                     <table class="ngio-options-table">
                                         <tbody>
                                         <tr>
                                             <th>
-                                                <strong><?php esc_html_e( 'WebP', 'nextgen-image-optimizer' ); ?></strong>
-                                                <span><?php esc_html_e( 'Excellent browser support and great compression for most websites.', 'nextgen-image-optimizer' ); ?></span>
+                                                <strong><?php esc_html_e( 'WebP', 'hedef-image-optimizer' ); ?></strong>
+                                                <span><?php esc_html_e( 'Excellent browser support and great compression for most websites.', 'hedef-image-optimizer' ); ?></span>
                                             </th>
                                             <td>
                                                 <?php
                                                 $this->render_toggle(
                                                     'enable_webp',
                                                     isset( $settings['enable_webp'] ) ? $settings['enable_webp'] : 1,
-                                                    __( 'Generate WebP versions', 'nextgen-image-optimizer' )
+                                                    __( 'Generate WebP versions', 'hedef-image-optimizer' )
                                                 );
                                                 ?>
                                             </td>
                                         </tr>
                                         <tr>
                                             <th>
-                                                <strong><?php esc_html_e( 'AVIF', 'nextgen-image-optimizer' ); ?></strong>
-                                                <span><?php esc_html_e( 'Even smaller files at similar quality, supported in modern browsers.', 'nextgen-image-optimizer' ); ?></span>
+                                                <strong><?php esc_html_e( 'AVIF', 'hedef-image-optimizer' ); ?></strong>
+                                                <span><?php esc_html_e( 'Even smaller files at similar quality, supported in modern browsers.', 'hedef-image-optimizer' ); ?></span>
                                             </th>
                                             <td>
                                                 <?php
                                                 $this->render_toggle(
                                                     'enable_avif',
                                                     isset( $settings['enable_avif'] ) ? $settings['enable_avif'] : 1,
-                                                    __( 'Generate AVIF versions', 'nextgen-image-optimizer' )
+                                                    __( 'Generate AVIF versions', 'hedef-image-optimizer' )
                                                 );
                                                 ?>
                                             </td>
@@ -465,38 +465,38 @@ function ngio_get_server_capabilities() {
                             <!-- Block 2: Automation & delivery -->
                             <div class="ngio-settings-block ngio-settings-block--green">
                                 <div class="ngio-settings-block-header">
-                                    <h3><?php esc_html_e( 'Automation & delivery', 'nextgen-image-optimizer' ); ?></h3>
-                                    <p><?php esc_html_e( 'Control when optimization runs and how next-gen formats are used on the frontend.', 'nextgen-image-optimizer' ); ?></p>
+                                    <h3><?php esc_html_e( 'Automation & delivery', 'hedef-image-optimizer' ); ?></h3>
+                                    <p><?php esc_html_e( 'Control when optimization runs and how next-gen formats are used on the frontend.', 'hedef-image-optimizer' ); ?></p>
                                 </div>
                                 <div class="ngio-settings-block-body">
                                     <table class="ngio-options-table">
                                         <tbody>
                                         <tr>
                                             <th>
-                                                <strong><?php esc_html_e( 'Optimize on upload', 'nextgen-image-optimizer' ); ?></strong>
-                                                <span><?php esc_html_e( 'Automatically generate WebP/AVIF versions when new images are uploaded.', 'nextgen-image-optimizer' ); ?></span>
+                                                <strong><?php esc_html_e( 'Optimize on upload', 'hedef-image-optimizer' ); ?></strong>
+                                                <span><?php esc_html_e( 'Automatically generate WebP/AVIF versions when new images are uploaded.', 'hedef-image-optimizer' ); ?></span>
                                             </th>
                                             <td>
                                                 <?php
                                                 $this->render_toggle(
                                                     'auto_on_upload',
                                                     isset( $settings['auto_on_upload'] ) ? $settings['auto_on_upload'] : 1,
-                                                    __( 'Run optimization on upload', 'nextgen-image-optimizer' )
+                                                    __( 'Run optimization on upload', 'hedef-image-optimizer' )
                                                 );
                                                 ?>
                                             </td>
                                         </tr>
                                         <tr>
                                             <th>
-                                                <strong><?php esc_html_e( 'Serve via &lt;picture&gt;', 'nextgen-image-optimizer' ); ?></strong>
-                                                <span><?php esc_html_e( 'Wrap images in &lt;picture&gt; with WebP/AVIF sources on the frontend.', 'nextgen-image-optimizer' ); ?></span>
+                                                <strong><?php esc_html_e( 'Serve via &lt;picture&gt;', 'hedef-image-optimizer' ); ?></strong>
+                                                <span><?php esc_html_e( 'Wrap images in &lt;picture&gt; with WebP/AVIF sources on the frontend.', 'hedef-image-optimizer' ); ?></span>
                                             </th>
                                             <td>
                                                 <?php
                                                 $this->render_toggle(
                                                     'enable_picture',
                                                     isset( $settings['enable_picture'] ) ? $settings['enable_picture'] : 1,
-                                                    __( 'Enable picture/srcset integration', 'nextgen-image-optimizer' )
+                                                    __( 'Enable picture/srcset integration', 'hedef-image-optimizer' )
                                                 );
                                                 ?>
                                             </td>
@@ -509,16 +509,16 @@ function ngio_get_server_capabilities() {
                             <!-- Block 3: Compression & resizing -->
                             <div class="ngio-settings-block ngio-settings-block--purple">
                                 <div class="ngio-settings-block-header">
-                                    <h3><?php esc_html_e( 'Compression & resizing', 'nextgen-image-optimizer' ); ?></h3>
-                                    <p><?php esc_html_e( 'Fine-tune the balance between visual quality and file size.', 'nextgen-image-optimizer' ); ?></p>
+                                    <h3><?php esc_html_e( 'Compression & resizing', 'hedef-image-optimizer' ); ?></h3>
+                                    <p><?php esc_html_e( 'Fine-tune the balance between visual quality and file size.', 'hedef-image-optimizer' ); ?></p>
                                 </div>
                                 <div class="ngio-settings-block-body">
                                     <table class="ngio-options-table">
                                         <tbody>
                                         <tr class="ngio-options-table-row--quality">
                                             <th>
-                                                <strong><?php esc_html_e( 'Quality level (0–100)', 'nextgen-image-optimizer' ); ?></strong>
-                                                <span><?php esc_html_e( 'Higher values mean better visual quality but larger files. 80–85 works great for most sites.', 'nextgen-image-optimizer' ); ?></span>
+                                                <strong><?php esc_html_e( 'Quality level (0–100)', 'hedef-image-optimizer' ); ?></strong>
+                                                <span><?php esc_html_e( 'Higher values mean better visual quality but larger files. 80–85 works great for most sites.', 'hedef-image-optimizer' ); ?></span>
                                             </th>
                                             <td>
                                                 <div class="ngio-quality-range-wrap">
@@ -539,15 +539,15 @@ function ngio_get_server_capabilities() {
                                                     <span class="ngio-quality-percent">%</span>
                                                 </div>
                                                 <p class="description">
-                                                    <?php esc_html_e( 'Recommended range: 75–90. For photography-heavy sites stay slightly higher, for UI-heavy sites you can go lower.', 'nextgen-image-optimizer' ); ?>
+                                                    <?php esc_html_e( 'Recommended range: 75–90. For photography-heavy sites stay slightly higher, for UI-heavy sites you can go lower.', 'hedef-image-optimizer' ); ?>
                                                 </p>
                                             </td>
                                         </tr>
 
                                         <tr>
                                             <th>
-                                                <strong><?php esc_html_e( 'Resize large images', 'nextgen-image-optimizer' ); ?></strong>
-                                                <span><?php esc_html_e( 'Automatically downscale next-gen copies when the original width is higher than the value below.', 'nextgen-image-optimizer' ); ?></span>
+                                                <strong><?php esc_html_e( 'Resize large images', 'hedef-image-optimizer' ); ?></strong>
+                                                <span><?php esc_html_e( 'Automatically downscale next-gen copies when the original width is higher than the value below.', 'hedef-image-optimizer' ); ?></span>
                                             </th>
                                             <td>
                                                 <div class="ngio-quality-range-wrap">
@@ -555,7 +555,7 @@ function ngio_get_server_capabilities() {
                                                     $this->render_toggle(
                                                         'resize_enabled',
                                                         isset( $settings['resize_enabled'] ) ? $settings['resize_enabled'] : 0,
-                                                        __( 'Resize next-gen copies', 'nextgen-image-optimizer' )
+                                                        __( 'Resize next-gen copies', 'hedef-image-optimizer' )
                                                     );
                                                     ?>
                                                     <input type="number"
@@ -567,22 +567,22 @@ function ngio_get_server_capabilities() {
                                                     <span class="ngio-quality-percent">px</span>
                                                 </div>
                                                 <p class="description">
-                                                    <?php esc_html_e( 'Example: 2048px keeps hero images sharp while avoiding super heavy files.', 'nextgen-image-optimizer' ); ?>
+                                                    <?php esc_html_e( 'Example: 2048px keeps hero images sharp while avoiding super heavy files.', 'hedef-image-optimizer' ); ?>
                                                 </p>
                                             </td>
                                         </tr>
 
                                         <tr>
                                             <th>
-                                                <strong><?php esc_html_e( 'Strip EXIF & metadata', 'nextgen-image-optimizer' ); ?></strong>
-                                                <span><?php esc_html_e( 'Remove camera EXIF/IPTC data from next-gen copies for smaller files. Originals remain untouched.', 'nextgen-image-optimizer' ); ?></span>
+                                                <strong><?php esc_html_e( 'Strip EXIF & metadata', 'hedef-image-optimizer' ); ?></strong>
+                                                <span><?php esc_html_e( 'Remove camera EXIF/IPTC data from next-gen copies for smaller files. Originals remain untouched.', 'hedef-image-optimizer' ); ?></span>
                                             </th>
                                             <td>
                                                 <?php
                                                 $this->render_toggle(
                                                     'strip_metadata',
                                                     isset( $settings['strip_metadata'] ) ? $settings['strip_metadata'] : 1,
-                                                    __( 'Strip metadata on convert', 'nextgen-image-optimizer' )
+                                                    __( 'Strip metadata on convert', 'hedef-image-optimizer' )
                                                 );
                                                 ?>
                                             </td>
@@ -595,32 +595,32 @@ function ngio_get_server_capabilities() {
                             <!-- Block 4: Advanced rules -->
                             <div class="ngio-settings-block ngio-settings-block--gray">
                                 <div class="ngio-settings-block-header">
-                                    <h3><?php esc_html_e( 'Advanced rules', 'nextgen-image-optimizer' ); ?></h3>
-                                    <p><?php esc_html_e( 'Exclude specific images from being converted based on their filenames or paths.', 'nextgen-image-optimizer' ); ?></p>
+                                    <h3><?php esc_html_e( 'Advanced rules', 'hedef-image-optimizer' ); ?></h3>
+                                    <p><?php esc_html_e( 'Exclude specific images from being converted based on their filenames or paths.', 'hedef-image-optimizer' ); ?></p>
                                 </div>
                                 <div class="ngio-settings-block-body">
                                     <table class="ngio-options-table">
                                         <tbody>
                                         <tr>
                                             <th>
-                                                <strong><?php esc_html_e( 'Enable exclusion rules', 'nextgen-image-optimizer' ); ?></strong>
-                                                <span><?php esc_html_e( 'When enabled, images matching any of the patterns below will be skipped during optimization.', 'nextgen-image-optimizer' ); ?></span>
+                                                <strong><?php esc_html_e( 'Enable exclusion rules', 'hedef-image-optimizer' ); ?></strong>
+                                                <span><?php esc_html_e( 'When enabled, images matching any of the patterns below will be skipped during optimization.', 'hedef-image-optimizer' ); ?></span>
                                             </th>
                                             <td>
                                                 <?php
                                                 $this->render_toggle(
                                                     'exclude_patterns_enabled',
                                                     isset( $settings['exclude_patterns_enabled'] ) ? $settings['exclude_patterns_enabled'] : 0,
-                                                    __( 'Apply exclusion patterns', 'nextgen-image-optimizer' )
+                                                    __( 'Apply exclusion patterns', 'hedef-image-optimizer' )
                                                 );
                                                 ?>
                                             </td>
                                         </tr>
                                         <tr>
                                             <th>
-                                                <strong><?php esc_html_e( 'Exclusion patterns (one per line)', 'nextgen-image-optimizer' ); ?></strong>
+                                                <strong><?php esc_html_e( 'Exclusion patterns (one per line)', 'hedef-image-optimizer' ); ?></strong>
                                                 <span>
-                                                    <?php esc_html_e( 'Any image whose path or filename contains one of these strings will be ignored. Example: logo, avatar-, /icons/, /uploads/2020/', 'nextgen-image-optimizer' ); ?>
+                                                    <?php esc_html_e( 'Any image whose path or filename contains one of these strings will be ignored. Example: logo, avatar-, /icons/, /uploads/2020/', 'hedef-image-optimizer' ); ?>
                                                 </span>
                                             </th>
                                             <td>
@@ -637,9 +637,9 @@ function ngio_get_server_capabilities() {
                             </div>
 
                             <div class="ngio-submit-row">
-                                <?php submit_button( __( 'Save settings', 'nextgen-image-optimizer' ), 'primary', 'submit', false ); ?>
+                                <?php submit_button( __( 'Save settings', 'hedef-image-optimizer' ), 'primary', 'submit', false ); ?>
                                 <p class="ngio-submit-hint">
-                                    <?php esc_html_e( 'After changing quality or resize, you can re-run the bulk optimizer to refresh existing images.', 'nextgen-image-optimizer' ); ?>
+                                    <?php esc_html_e( 'After changing quality or resize, you can re-run the bulk optimizer to refresh existing images.', 'hedef-image-optimizer' ); ?>
                                 </p>
                             </div>
                         </div>
@@ -650,10 +650,10 @@ function ngio_get_server_capabilities() {
                         <header class="ngio-card-header">
                             <h2>
                                 <span class="dashicons dashicons-admin-tools"></span>
-                                <?php esc_html_e( 'Server support', 'nextgen-image-optimizer' ); ?>
+                                <?php esc_html_e( 'Server support', 'hedef-image-optimizer' ); ?>
                             </h2>
                             <p class="ngio-card-subtitle">
-                                <?php esc_html_e( 'Detection of GD/Imagick capabilities for WebP and AVIF.', 'nextgen-image-optimizer' ); ?>
+                                <?php esc_html_e( 'Detection of GD/Imagick capabilities for WebP and AVIF.', 'hedef-image-optimizer' ); ?>
                             </p>
                         </header>
                         <div class="ngio-card-body">
@@ -663,7 +663,7 @@ function ngio_get_server_capabilities() {
                                     <tr>
                                         <th class="ngio-server-label">
                                             <span class="dashicons dashicons-admin-generic"></span>
-                                            <span><?php esc_html_e( 'WebP via GD', 'nextgen-image-optimizer' ); ?></span>
+                                            <span><?php esc_html_e( 'WebP via GD', 'hedef-image-optimizer' ); ?></span>
                                         </th>
                                         <td>
                                             <?php $this->render_cap_badge( ! empty( $caps['webp_gd'] ) ); ?>
@@ -672,7 +672,7 @@ function ngio_get_server_capabilities() {
                                     <tr>
                                         <th class="ngio-server-label">
                                             <span class="dashicons dashicons-admin-generic"></span>
-                                            <span><?php esc_html_e( 'WebP via Imagick', 'nextgen-image-optimizer' ); ?></span>
+                                            <span><?php esc_html_e( 'WebP via Imagick', 'hedef-image-optimizer' ); ?></span>
                                         </th>
                                         <td>
                                             <?php $this->render_cap_badge( ! empty( $caps['webp_imagick'] ) ); ?>
@@ -681,7 +681,7 @@ function ngio_get_server_capabilities() {
                                     <tr>
                                         <th class="ngio-server-label">
                                             <span class="dashicons dashicons-admin-generic"></span>
-                                            <span><?php esc_html_e( 'AVIF via GD', 'nextgen-image-optimizer' ); ?></span>
+                                            <span><?php esc_html_e( 'AVIF via GD', 'hedef-image-optimizer' ); ?></span>
                                         </th>
                                         <td>
                                             <?php $this->render_cap_badge( ! empty( $caps['avif_gd'] ) ); ?>
@@ -690,7 +690,7 @@ function ngio_get_server_capabilities() {
                                     <tr>
                                         <th class="ngio-server-label">
                                             <span class="dashicons dashicons-admin-generic"></span>
-                                            <span><?php esc_html_e( 'AVIF via Imagick', 'nextgen-image-optimizer' ); ?></span>
+                                            <span><?php esc_html_e( 'AVIF via Imagick', 'hedef-image-optimizer' ); ?></span>
                                         </th>
                                         <td>
                                             <?php $this->render_cap_badge( ! empty( $caps['avif_imagick'] ) ); ?>
@@ -699,7 +699,7 @@ function ngio_get_server_capabilities() {
                                     <tr class="ngio-server-summary-row">
                                         <th class="ngio-server-label">
                                             <span class="dashicons dashicons-yes"></span>
-                                            <span><?php esc_html_e( 'Overall WebP support', 'nextgen-image-optimizer' ); ?></span>
+                                            <span><?php esc_html_e( 'Overall WebP support', 'hedef-image-optimizer' ); ?></span>
                                         </th>
                                         <td>
                                             <?php $this->render_cap_badge( ! empty( $caps['webp_any'] ) ); ?>
@@ -708,7 +708,7 @@ function ngio_get_server_capabilities() {
                                     <tr class="ngio-server-summary-row">
                                         <th class="ngio-server-label">
                                             <span class="dashicons dashicons-yes"></span>
-                                            <span><?php esc_html_e( 'Overall AVIF support', 'nextgen-image-optimizer' ); ?></span>
+                                            <span><?php esc_html_e( 'Overall AVIF support', 'hedef-image-optimizer' ); ?></span>
                                         </th>
                                         <td>
                                             <?php $this->render_cap_badge( ! empty( $caps['avif_any'] ) ); ?>
@@ -718,7 +718,7 @@ function ngio_get_server_capabilities() {
                                 </table>
                             </div>
                             <p class="description">
-                                <?php esc_html_e( 'If Imagick appears unavailable in the server support table, you need to install the Imagick PHP extension on your server so image conversions can run. Hedef Hosting servers include Imagick support, so enabling it should be quick and easy.', 'nextgen-image-optimizer' ); ?>
+                                <?php esc_html_e( 'If Imagick appears unavailable in the server support table, you need to install the Imagick PHP extension on your server so image conversions can run. Hedef Hosting servers include Imagick support, so enabling it should be quick and easy.', 'hedef-image-optimizer' ); ?>
                             </p>
                         </div>
                     </section>
@@ -728,17 +728,17 @@ function ngio_get_server_capabilities() {
                         <header class="ngio-card-header">
                             <h2>
                                 <span class="dashicons dashicons-chart-pie"></span>
-                                <?php esc_html_e( 'Media overview', 'nextgen-image-optimizer' ); ?>
+                                <?php esc_html_e( 'Media overview', 'hedef-image-optimizer' ); ?>
                             </h2>
                             <p class="ngio-card-subtitle">
-                                <?php esc_html_e( 'Quick snapshot of how your media library benefits from NGIO.', 'nextgen-image-optimizer' ); ?>
+                                <?php esc_html_e( 'Quick snapshot of how your media library benefits from NGIO.', 'hedef-image-optimizer' ); ?>
                             </p>
                         </header>
                         <div class="ngio-card-body">
                             <div class="ngio-media-summary-grid">
                                 <div class="ngio-media-summary-box">
                                     <span class="ngio-media-summary-label">
-                                        <?php esc_html_e( 'Convertible images', 'nextgen-image-optimizer' ); ?>
+                                        <?php esc_html_e( 'Convertible images', 'hedef-image-optimizer' ); ?>
                                     </span>
                                     <span class="ngio-media-summary-value">
                                         <?php echo esc_html( number_format_i18n( $media_overview['total_images'] ) ); ?>
@@ -746,7 +746,7 @@ function ngio_get_server_capabilities() {
                                 </div>
                                 <div class="ngio-media-summary-box">
                                     <span class="ngio-media-summary-label">
-                                        <?php esc_html_e( 'Already optimized', 'nextgen-image-optimizer' ); ?>
+                                        <?php esc_html_e( 'Already optimized', 'hedef-image-optimizer' ); ?>
                                     </span>
                                     <span class="ngio-media-summary-value">
                                         <?php echo esc_html( number_format_i18n( $media_overview['optimized_images'] ) ); ?>
@@ -754,7 +754,7 @@ function ngio_get_server_capabilities() {
                                 </div>
                                 <div class="ngio-media-summary-box">
                                     <span class="ngio-media-summary-label">
-                                        <?php esc_html_e( 'Space saved (sample)', 'nextgen-image-optimizer' ); ?>
+                                        <?php esc_html_e( 'Space saved (sample)', 'hedef-image-optimizer' ); ?>
                                     </span>
                                     <span class="ngio-media-summary-value">
                                         <?php echo esc_html( $media_overview['saved_human'] ); ?>
@@ -764,7 +764,7 @@ function ngio_get_server_capabilities() {
 
                             <div class="ngio-media-summary-footer">
                                 <a href="<?php echo esc_url( admin_url( 'upload.php?page=ngio-bulk' ) ); ?>" class="button button-secondary">
-                                    <?php esc_html_e( 'Run bulk optimization', 'nextgen-image-optimizer' ); ?>
+                                    <?php esc_html_e( 'Run bulk optimization', 'hedef-image-optimizer' ); ?>
                                 </a>
                             </div>
                         </div>
@@ -779,13 +779,13 @@ function ngio_get_server_capabilities() {
         if ( $available ) {
             ?>
             <span class="ngio-cap ngio-cap--yes">
-                <?php esc_html_e( 'Available', 'nextgen-image-optimizer' ); ?>
+                <?php esc_html_e( 'Available', 'hedef-image-optimizer' ); ?>
             </span>
             <?php
         } else {
             ?>
             <span class="ngio-cap ngio-cap--no">
-                <?php esc_html_e( 'Not available', 'nextgen-image-optimizer' ); ?>
+                <?php esc_html_e( 'Not available', 'hedef-image-optimizer' ); ?>
             </span>
             <?php
         }
@@ -807,19 +807,19 @@ function ngio_get_server_capabilities() {
         ?>
         <div class="misc-pub-section misc-pub-ngio-optimize">
             <span class="ngio-single-optimize-label">
-                <?php esc_html_e( 'NextGen Image Optimizer', 'nextgen-image-optimizer' ); ?>
+                <?php esc_html_e( 'Hedef Image Optimizer', 'hedef-image-optimizer' ); ?>
             </span>
             <p>
                 <button type="button"
                         class="button button-secondary"
                         id="ngio-optimize-single"
                         data-attachment-id="<?php echo esc_attr( $post->ID ); ?>">
-                    <?php esc_html_e( 'Bu görseli yeniden optimize et', 'nextgen-image-optimizer' ); ?>
+                    <?php esc_html_e( 'Bu görseli yeniden optimize et', 'hedef-image-optimizer' ); ?>
                 </button>
                 <span class="spinner" id="ngio-single-spinner"></span>
             </p>
             <p class="description" id="ngio-single-status">
-                <?php esc_html_e( 'Rebuild WebP/AVIF copies for this image without touching the original file.', 'nextgen-image-optimizer' ); ?>
+                <?php esc_html_e( 'Rebuild WebP/AVIF copies for this image without touching the original file.', 'hedef-image-optimizer' ); ?>
             </p>
         </div>
         <?php
@@ -831,7 +831,7 @@ function ngio_get_server_capabilities() {
         if ( ! current_user_can( 'upload_files' ) && ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error(
                 array(
-                    'message' => __( 'You are not allowed to optimize this image.', 'nextgen-image-optimizer' ),
+                    'message' => __( 'You are not allowed to optimize this image.', 'hedef-image-optimizer' ),
                 )
             );
         }
@@ -841,7 +841,7 @@ function ngio_get_server_capabilities() {
         if ( ! $attachment_id || 'attachment' !== get_post_type( $attachment_id ) ) {
             wp_send_json_error(
                 array(
-                    'message' => __( 'Invalid attachment.', 'nextgen-image-optimizer' ),
+                    'message' => __( 'Invalid attachment.', 'hedef-image-optimizer' ),
                 )
             );
         }
@@ -850,7 +850,7 @@ function ngio_get_server_capabilities() {
         if ( ! in_array( $mime, array( 'image/jpeg', 'image/jpg', 'image/png' ), true ) ) {
             wp_send_json_error(
                 array(
-                    'message' => __( 'This file type cannot be optimized.', 'nextgen-image-optimizer' ),
+                    'message' => __( 'This file type cannot be optimized.', 'hedef-image-optimizer' ),
                 )
             );
         }
@@ -859,7 +859,7 @@ function ngio_get_server_capabilities() {
         if ( empty( $meta ) || ! is_array( $meta ) ) {
             wp_send_json_error(
                 array(
-                    'message' => __( 'This file has no metadata to optimize.', 'nextgen-image-optimizer' ),
+                    'message' => __( 'This file has no metadata to optimize.', 'hedef-image-optimizer' ),
                 )
             );
         }
@@ -867,7 +867,7 @@ function ngio_get_server_capabilities() {
         if ( ! class_exists( 'NGIO_Converter' ) ) {
             wp_send_json_error(
                 array(
-                    'message' => __( 'Converter is not available.', 'nextgen-image-optimizer' ),
+                    'message' => __( 'Converter is not available.', 'hedef-image-optimizer' ),
                 )
             );
         }
@@ -901,7 +901,7 @@ function ngio_get_server_capabilities() {
 
         wp_send_json_success(
             array(
-                'message' => __( 'Image optimized successfully.', 'nextgen-image-optimizer' ),
+                'message' => __( 'Image optimized successfully.', 'hedef-image-optimizer' ),
                 'stats'   => $stats,
             )
         );
@@ -913,7 +913,7 @@ function ngio_get_server_capabilities() {
         if ( ! current_user_can( 'upload_files' ) && ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error(
                 array(
-                    'message' => __( 'You are not allowed to restore this image.', 'nextgen-image-optimizer' ),
+                    'message' => __( 'You are not allowed to restore this image.', 'hedef-image-optimizer' ),
                 )
             );
         }
@@ -923,7 +923,7 @@ function ngio_get_server_capabilities() {
         if ( ! $attachment_id || 'attachment' !== get_post_type( $attachment_id ) ) {
             wp_send_json_error(
                 array(
-                    'message' => __( 'Invalid attachment.', 'nextgen-image-optimizer' ),
+                    'message' => __( 'Invalid attachment.', 'hedef-image-optimizer' ),
                 )
             );
         }
@@ -932,7 +932,7 @@ function ngio_get_server_capabilities() {
         if ( ! in_array( $mime, array( 'image/jpeg', 'image/jpg', 'image/png' ), true ) ) {
             wp_send_json_error(
                 array(
-                    'message' => __( 'This file type cannot be restored.', 'nextgen-image-optimizer' ),
+                    'message' => __( 'This file type cannot be restored.', 'hedef-image-optimizer' ),
                 )
             );
         }
@@ -968,7 +968,7 @@ function ngio_get_server_capabilities() {
 
         wp_send_json_success(
             array(
-                'message' => __( 'Next-gen copies removed. Original image is now used.', 'nextgen-image-optimizer' ),
+                'message' => __( 'Next-gen copies removed. Original image is now used.', 'hedef-image-optimizer' ),
             )
         );
     }
@@ -980,12 +980,12 @@ function ngio_get_server_capabilities() {
             $new[ $key ] = $label;
 
             if ( 'date' === $key ) {
-                $new['ngio'] = __( 'NextGen', 'nextgen-image-optimizer' );
+                $new['ngio'] = __( 'Optimizer', 'hedef-image-optimizer' );
             }
         }
 
         if ( ! isset( $new['ngio'] ) ) {
-            $new['ngio'] = __( 'NextGen', 'nextgen-image-optimizer' );
+            $new['ngio'] = __( 'Optimizer', 'hedef-image-optimizer' );
         }
 
         return $new;
@@ -1003,7 +1003,7 @@ function ngio_get_server_capabilities() {
 
         $mime = get_post_mime_type( $post_id );
         if ( ! in_array( $mime, array( 'image/jpeg', 'image/jpg', 'image/png' ), true ) ) {
-            echo '<span class="ngio-media-col-notice">' . esc_html__( 'Not an optimizable image', 'nextgen-image-optimizer' ) . '</span>';
+            echo '<span class="ngio-media-col-notice">' . esc_html__( 'Not an optimizable image', 'hedef-image-optimizer' ) . '</span>';
             return;
         }
 
@@ -1011,11 +1011,11 @@ function ngio_get_server_capabilities() {
         $quality  = isset( $settings['quality'] ) ? (int) $settings['quality'] : 82;
 
         if ( $quality >= 95 ) {
-            $profile_label = __( 'Lossless', 'nextgen-image-optimizer' );
+            $profile_label = __( 'Lossless', 'hedef-image-optimizer' );
         } elseif ( $quality <= 70 ) {
-            $profile_label = __( 'Aggressive', 'nextgen-image-optimizer' );
+            $profile_label = __( 'Aggressive', 'hedef-image-optimizer' );
         } else {
-            $profile_label = __( 'Smart', 'nextgen-image-optimizer' );
+            $profile_label = __( 'Smart', 'hedef-image-optimizer' );
         }
 
         $meta = wp_get_attachment_metadata( $post_id );
@@ -1071,13 +1071,13 @@ function ngio_get_server_capabilities() {
 
         if ( $optimized && $formats ) {
             $nextgen_status = sprintf(
-                __( 'Yes (%s)', 'nextgen-image-optimizer' ),
+                __( 'Yes (%s)', 'hedef-image-optimizer' ),
                 implode( ', ', $formats )
             );
         } elseif ( $optimized ) {
-            $nextgen_status = __( 'Yes', 'nextgen-image-optimizer' );
+            $nextgen_status = __( 'Yes', 'hedef-image-optimizer' );
         } else {
-            $nextgen_status = __( 'No', 'nextgen-image-optimizer' );
+            $nextgen_status = __( 'No', 'hedef-image-optimizer' );
         }
 
         $attachment_id_attr = (int) $post_id;
@@ -1088,32 +1088,32 @@ function ngio_get_server_capabilities() {
 
         if ( $optimized ) {
             echo '<div class="ngio-media-col-line">';
-            echo '<span class="ngio-media-col-label">' . esc_html__( 'New filesize', 'nextgen-image-optimizer' ) . '</span>';
+            echo '<span class="ngio-media-col-label">' . esc_html__( 'New filesize', 'hedef-image-optimizer' ) . '</span>';
             echo '<span class="ngio-media-col-value ngio-media-col-value-size">' . esc_html( $next_human ) . '</span>';
             echo '</div>';
 
             echo '<div class="ngio-media-col-line">';
-            echo '<span class="ngio-media-col-label">' . esc_html__( 'Original saving', 'nextgen-image-optimizer' ) . '</span>';
+            echo '<span class="ngio-media-col-label">' . esc_html__( 'Original saving', 'hedef-image-optimizer' ) . '</span>';
             echo '<span class="ngio-media-col-value ngio-media-col-saved ngio-media-col-value-saved">' . esc_html( $saved_label ) . '</span>';
             echo '</div>';
         } else {
-            echo '<span class="ngio-media-col-notice">' . esc_html__( 'Not optimized yet', 'nextgen-image-optimizer' ) . '</span>';
+            echo '<span class="ngio-media-col-notice">' . esc_html__( 'Not optimized yet', 'hedef-image-optimizer' ) . '</span>';
         }
 
         echo '</div>';
 
         echo '<div class="ngio-media-col-actions">';
         echo '<button type="button" class="button-link ngio-media-reoptimize" data-attachment-id="' . esc_attr( $attachment_id_attr ) . '">';
-        esc_html_e( 'Re-optimize', 'nextgen-image-optimizer' );
+        esc_html_e( 'Re-optimize', 'hedef-image-optimizer' );
         echo '</button>';
 
         if ( $optimized ) {
             echo '<button type="button" class="button-link ngio-media-details-toggle" data-open="0">';
-            esc_html_e( 'View details', 'nextgen-image-optimizer' );
+            esc_html_e( 'View details', 'hedeef-image-optimizer' );
             echo '</button>';
 
             echo '<button type="button" class="button-link ngio-media-restore" data-attachment-id="' . esc_attr( $attachment_id_attr ) . '">';
-            esc_html_e( 'Restore original', 'nextgen-image-optimizer' );
+            esc_html_e( 'Restore original', 'hedef-image-optimizer' );
             echo '</button>';
         }
 
@@ -1123,11 +1123,11 @@ function ngio_get_server_capabilities() {
         if ( $optimized ) {
             echo '<div class="ngio-media-details">';
             echo '<div class="ngio-media-details-inner">';
-            echo '<div class="ngio-media-details-row"><span class="ngio-media-details-label">' . esc_html__( 'Original filesize', 'nextgen-image-optimizer' ) . '</span><span class="ngio-media-details-value">' . esc_html( $orig_human ) . '</span></div>';
-            echo '<div class="ngio-media-details-row"><span class="ngio-media-details-label">' . esc_html__( 'Level', 'nextgen-image-optimizer' ) . '</span><span class="ngio-media-details-value">' . esc_html( $profile_label ) . '</span></div>';
-            echo '<div class="ngio-media-details-row"><span class="ngio-media-details-label">' . esc_html__( 'Next-gen generated', 'nextgen-image-optimizer' ) . '</span><span class="ngio-media-details-value">' . esc_html( $nextgen_status ) . '</span></div>';
-            echo '<div class="ngio-media-details-row"><span class="ngio-media-details-label">' . esc_html__( 'Thumbnails optimized', 'nextgen-image-optimizer' ) . '</span><span class="ngio-media-details-value">' . esc_html( number_format_i18n( $thumb_count ) ) . '</span></div>';
-            echo '<div class="ngio-media-details-row"><span class="ngio-media-details-label">' . esc_html__( 'Overall saving', 'nextgen-image-optimizer' ) . '</span><span class="ngio-media-details-value">' . esc_html( $saved_label ) . '</span></div>';
+            echo '<div class="ngio-media-details-row"><span class="ngio-media-details-label">' . esc_html__( 'Original filesize', 'hedef-image-optimizer' ) . '</span><span class="ngio-media-details-value">' . esc_html( $orig_human ) . '</span></div>';
+            echo '<div class="ngio-media-details-row"><span class="ngio-media-details-label">' . esc_html__( 'Level', 'hedef-image-optimizer' ) . '</span><span class="ngio-media-details-value">' . esc_html( $profile_label ) . '</span></div>';
+            echo '<div class="ngio-media-details-row"><span class="ngio-media-details-label">' . esc_html__( 'Next-gen generated', 'hedef-image-optimizer' ) . '</span><span class="ngio-media-details-value">' . esc_html( $nextgen_status ) . '</span></div>';
+            echo '<div class="ngio-media-details-row"><span class="ngio-media-details-label">' . esc_html__( 'Thumbnails optimized', 'hedef-image-optimizer' ) . '</span><span class="ngio-media-details-value">' . esc_html( number_format_i18n( $thumb_count ) ) . '</span></div>';
+            echo '<div class="ngio-media-details-row"><span class="ngio-media-details-label">' . esc_html__( 'Overall saving', 'hedef-image-optimizer' ) . '</span><span class="ngio-media-details-value">' . esc_html( $saved_label ) . '</span></div>';
             echo '</div>';
             echo '</div>';
         }
