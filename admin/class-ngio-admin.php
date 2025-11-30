@@ -1075,17 +1075,17 @@ printf(
             }
         }
 
-        if ( $optimized && $formats ) {
-                /* translators: %s: comma-separated list of generated formats, e.g. WebP, AVIF. */
-            $nextgen_status = sprintf(
-                __( 'Yes (%s)', 'hedef-image-optimizer-webp-avif' ),
-                implode( ', ', $formats )
-            );
-        } elseif ( $optimized ) {
-            $nextgen_status = __( 'Yes', 'hedef-image-optimizer-webp-avif' );
-        } else {
-            $nextgen_status = __( 'No', 'hedef-image-optimizer-webp-avif' );
-        }
+if ( $optimized && $formats ) {
+    /* translators: %s: comma-separated list of generated formats, e.g. WebP, AVIF. */
+    $nextgen_status = sprintf(
+        __( 'Yes (%s)', 'hedef-image-optimizer-webp-avif' ),
+        implode( ', ', $formats )
+    );
+} elseif ( $optimized ) {
+    $nextgen_status = __( 'Yes', 'hedef-image-optimizer-webp-avif' );
+} else {
+    $nextgen_status = __( 'No', 'hedef-image-optimizer-webp-avif' );
+}
 
         $attachment_id_attr = (int) $post_id;
 
