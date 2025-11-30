@@ -149,7 +149,9 @@ class NGIO_Bulk {
 			return;
 		}
 
-		$overview = $this->get_overview_stats();
+		$overview          = $this->get_overview_stats();
+		$optimized_display = number_format_i18n( (int) $overview['optimized_images'] );
+		$total_display     = number_format_i18n( (int) $overview['total_images'] );
 		?>
 		<div class="wrap ngio-bulk-wrap">
 			<div class="ngio-bulk-header">
@@ -213,11 +215,11 @@ class NGIO_Bulk {
 
 					<p class="ngio-bulk-overview-note">
 						<?php
-						/* translators: 1: number of optimized images, 2: total number of images. */
 						printf(
-							esc_html__( 'Optimized %1$d of %2$d images so far…', 'hedef-image-optimizer-webp-avif' ),
-							(int) $overview['optimized_images'],
-							(int) $overview['total_images']
+							'%1$s %2$s / %3$s',
+							esc_html__( 'Optimized images so far:', 'hedef-image-optimizer-webp-avif' ),
+							esc_html( $optimized_display ),
+							esc_html( $total_display )
 						);
 						?>
 					</p>
