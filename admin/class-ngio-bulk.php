@@ -51,7 +51,7 @@ class NGIO_Bulk {
 				'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
 				'nonce'          => wp_create_nonce( 'ngio_bulk_optimize' ),
 				'estimatedTotal' => $overview['total_images'],
-				// translators: %processed%: processed image count, %total%: total images, %percent%: completion percentage for this run.
+				/* translators: %processed%: processed image count, %total%: total images, %percent%: completion percentage for this run. */
 				'textStatus'     => __( 'Processed %processed% of %total% images (%percent%% of this run).', 'hedef-image-optimizer-webp-avif' ),
 				'textStarting'   => __( 'Starting bulk optimization…', 'hedef-image-optimizer-webp-avif' ),
 				'textDone'       => __( 'Bulk optimization finished.', 'hedef-image-optimizer-webp-avif' ),
