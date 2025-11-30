@@ -1,4 +1,4 @@
-=== NextGen Image Optimizer ===
+=== Hedef Image Optimizer — WebP & AVIF ===
 Contributors: hedefhosting
 Donate link: https://hedefhosting.com.tr/
 Tags: image optimization, webp, avif, performance, images, responsive images
@@ -13,7 +13,7 @@ Convert JPEG and PNG images to modern WebP and AVIF formats on upload or in bulk
 
 == Description ==
 
-NextGen Image Optimizer is a lightweight but powerful image optimization plugin that converts your JPEG and PNG uploads into modern WebP and AVIF formats.
+Hedef Image Optimizer — WebP & AVIF is a lightweight but powerful image optimization plugin that converts your JPEG and PNG uploads into modern WebP and AVIF formats.
 
 All conversions happen locally on your server using GD and/or Imagick – there is no external API, no remote storage and no extra monthly bills.
 
@@ -32,7 +32,7 @@ It focuses on three main goals:
 * Bulk optimization tool for existing Media Library images, with:
   * Progress bar and live log of processed items.
   * “Run again” support to refresh images after changing quality or resize settings.
-* Media Library “NextGen” column:
+* Media Library “Optimizer” column:
   * See per-image status, new filesize, and percentage of space saved.
   * One-click Re-optimize and Restore original actions (if you keep originals).
 * Per-image controls in the attachment edit screen:
@@ -76,7 +76,7 @@ If your server is missing some of these, the **Server support** box on the setti
 
 == Installation ==
 
-1. Upload the `nextgen-image-optimizer` folder to the `/wp-content/plugins/` directory,  
+1. Upload the `hedef-image-optimizer` folder to the `/wp-content/plugins/` directory,  
    or install it via the WordPress.org plugin repository (when available).
 2. Activate the plugin through the **Plugins** menu in WordPress.
 3. Go to **Settings → Image Optimizer** to configure:
@@ -117,7 +117,7 @@ Go to **Media → Bulk Optimize (NGIO)**:
 
 In **Media → Library** (list view):
 
-* Use the **NextGen** column to see:
+* Use the **Optimizer** column to see:
   * Status (optimized/not optimized).
   * New filesize and percentage of space saved.
   * Links to Re-optimize and Restore original.
@@ -168,7 +168,7 @@ No. All conversions happen locally on your server. The plugin does not send your
 
 1. Settings page – main configuration, conversion formats, automation, quality and server support.  
 2. Bulk optimization screen – progress bar, global overview donut and per-image log.  
-3. Media Library NextGen column – per-image status, savings, and quick actions.
+3. Media Library Optimizer column – per-image status, savings, and quick actions.
 
 == Changelog ==
 
@@ -181,13 +181,13 @@ No. All conversions happen locally on your server. The plugin does not send your
 * Optional <picture> / srcset integration on the frontend.
 * Quality, resize and metadata stripping controls.
 * Exclusion patterns for filenames/paths.
-* Media Library “NextGen” column with per-image stats and actions.
+* Media Library “Optimizer” column with per-image stats and actions.
 * Per-attachment metabox for manual optimization.
 * English and Turkish translations.
 * Modern, polished admin UI with donut chart and progress bar.
 
 == License ==
 
-NextGen Image Optimizer is free software released under the **GNU General Public License v2.0 or later**.  
+Hedef Image Optimizer — WebP & AVIF is free software released under the **GNU General Public License v2.0 or later**.  
 You can redistribute it and/or modify it under the terms of the GPL as published by the Free Software Foundation.  
 See https://www.gnu.org/licenses/gpl-2.0.html for the full license text.
