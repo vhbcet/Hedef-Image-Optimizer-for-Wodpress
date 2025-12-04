@@ -3,7 +3,7 @@ Contributors: hedefhosting
 Donate link: https://hedefhosting.com.tr/
 Tags: image optimizer, webp, avif, performance, media
 Requires at least: 6.5
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 8.1
 Stable tag: 0.1.0
 License: GPLv2 or later
